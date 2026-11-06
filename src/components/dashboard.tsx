@@ -142,16 +142,22 @@ export function Dashboard() {
         </div>
       </article>
 
-      <section className="mt-6 grid grid-cols-3 gap-2">
+      <section className="mt-5 overflow-hidden rounded-2xl bg-raise md:mt-6 md:grid md:grid-cols-3 md:gap-2 md:overflow-visible md:bg-transparent">
         {[
           { to: "/learn", label: "Learn", hint: "Today’s tool", icon: BookOpen },
           { to: "/deck", label: "Deck", hint: "Watch or upload", icon: Clapperboard },
           { to: "/studio", label: "Studio", hint: "Make a post", icon: Sparkles },
         ].map((item) => (
-          <Link key={item.to} to={item.to} className="rounded-2xl bg-raise px-3 py-4 shadow-ring transition-shadow hover:shadow-ring-strong">
+          <Link
+            key={item.to}
+            to={item.to}
+            className="flex min-h-14 items-center gap-3 border-b border-line px-4 py-3 last:border-b-0 active:bg-surface md:block md:rounded-2xl md:border-0 md:bg-raise md:px-3 md:py-4 md:shadow-ring"
+          >
             <item.icon className="size-5 text-teal" />
-            <p className="mt-2 text-sm">{item.label}</p>
-            <p className="text-xs text-muted">{item.hint}</p>
+            <span className="min-w-0 flex-1 md:block">
+              <span className="block text-sm font-medium">{item.label}</span>
+              <span className="block text-xs text-muted">{item.hint}</span>
+            </span>
           </Link>
         ))}
       </section>

@@ -85,6 +85,22 @@
   input[type="range"] { accent-color: #2ee6c7; }
 }
 
+@media (max-width: 767px) {
+  html, body, .app-frame {
+    background: #071018;
+  }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .app-scroll h1 {
+    font-size: 1.65rem;
+    letter-spacing: -0.02em;
+  }
+  .app-scroll {
+    scroll-padding-bottom: 1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   a, button, input, select, textarea {
     transition: none;

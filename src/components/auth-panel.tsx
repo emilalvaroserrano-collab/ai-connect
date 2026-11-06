@@ -84,12 +84,12 @@ export function AuthPanel({ mode }: { mode: "login" | "join" }) {
   }
 
   return (
-    <main className="min-h-dvh bg-canvas px-5 py-8 md:grid md:place-items-center md:py-16">
+    <main className="flex min-h-dvh flex-col bg-canvas px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(1.5rem,env(safe-area-inset-bottom))] md:grid md:place-items-center md:py-16">
       <div className="mx-auto w-full max-w-md md:rounded-[1.75rem] md:bg-raise md:px-8 md:py-10 md:shadow-float">
         <Link to="/" aria-label="Home">
           <Logo />
         </Link>
-        <h1 className="mt-8 font-display text-4xl">{mode === "join" ? "Create your account" : "Welcome back"}</h1>
+        <h1 className="mt-8 font-display text-3xl md:text-4xl">{mode === "join" ? "Create your account" : "Welcome back"}</h1>
         {mode === "join" ? (
           <p className="mt-4 text-sm text-muted">
             Next you’ll see your sponsor. They give you the code that activates this account.
