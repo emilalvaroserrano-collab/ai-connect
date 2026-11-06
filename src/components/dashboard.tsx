@@ -1,11 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Clapperboard, Sparkles } from "lucide-react";
+import { Bot, Briefcase, ImageIcon, MessageSquare, Wrench, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { getDesk } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
 import { errorText, formatClock, secondsUntilManilaMidnight } from "@/lib/manila";
-import type { Desk, Progress, TutorialCard } from "@/lib/types";
+import type { Desk } from "@/lib/types";
 
 function Ring({ value }: { value: number }) {
   const radius = 18;
@@ -94,117 +94,97 @@ export function Dashboard() {
 
   const byId = new Map(desk.tutorials.map((tutorial) => [tutorial.id, tutorial]));
   const today = byId.get(desk.todayId) ?? desk.tutorials[0];
-  const progressOf = (id: string) => desk.progress.find((row) => row.tutorialId === id);
-  const continueRows = desk.progress
-    .filter((row) => row.progressPercent > 0 && !row.completed)
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .map((row) => ({ row, tutorial: byId.get(row.tutorialId) }))
-    .filter((item): item is { row: Progress; tutorial: TutorialCard } => Boolean(item.tutorial));
-  const archive = desk.tutorials.filter((tutorial) => tutorial.id !== today?.id).slice(0, 4);
-  const todayProgress = today ? progressOf(today.id) : undefined;
 
   if (!today) return <p className="px-5 py-16 text-muted">No lessons yet.</p>;
 
+  const finished = desk.progress.filter((row) => row.completed).length;
+  const totalLessons = Math.max(desk.tutorials.length, 1);
+  const percent = Math.round((finished / totalLessons) * 100);
+  const level = percent >= 70 ? "Advanced" : percent >= 30 ? "Learner" : "Beginner";
+  const firstName = desk.profile.name?.split(" ")[0] || "there";
+  const categories = [
+    { label: "Prompting Basics", icon: MessageSquare, id: "projects" },
+    { label: "AI for Work", icon: Briefcase, id: "cursor" },
+    { label: "Content Creation", icon: ImageIcon, id: "product" },
+    { label: "Automation", icon: Zap, id: "n8n" },
+    { label: "Chatbots", icon: Bot, id: "ollama" },
+    { label: "Best Tools", icon: Wrench, id: "evals" },
+  ];
+  const recommended = desk.tutorials.find((item) => item.id !== today.id) ?? today;
+
   return (
-    <div className="mx-auto max-w-5xl px-5 py-6 md:px-8">
-      <p className="text-sm text-muted">Good morning{desk.profile.name ? `, ${desk.profile.name.split(" ")[0]}` : ""}.</p>
-      <article className="mt-5 overflow-hidden rounded-[1.75rem] bg-raise shadow-float">
-        <div className="relative aspect-[16/10] sm:aspect-[16/8]">
+    <div className="mx-auto max-w-3xl px-4 py-4 md:px-8">
+      <p className="text-sm text-teal">Welcome back!</p>
+      <h1 className="font-display text-3xl">AI Master Plan</h1>
+      <p className="mt-1 text-sm text-muted">Good to see you, {firstName}.</p>
+      <form
+        className="mt-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          const data = new FormData(event.currentTarget);
+          const q = String(data.get("q") ?? "").trim();
+          window.location.assign(q ? `/learn?q=${encodeURIComponent(q)}` : "/learn");
+        }}
+      >
+        <input name="q" placeholder="Search lessons, tools, or topics..." className="h-12 w-full rounded-2xl border border-line bg-raise px-4" />
+      </form>
+
+      <Link to="/learn/$tutorialId" params={{ tutorialId: today.id }} className="mt-5 block overflow-hidden rounded-3xl border border-line bg-raise">
+        <div className="relative aspect-[16/9]">
           <img src={today.thumbnail} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/30 to-transparent" />
-          <div className="absolute left-4 top-4 rounded-full bg-canvas/80 px-3 py-1 text-xs text-teal">Today’s pick</div>
-          <div className="absolute right-4 top-4 rounded-full bg-canvas/80 px-3 py-1 text-xs tabular-nums">
-            Swaps in <Countdown />
-          </div>
-          <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-sm text-muted">
-              {today.difficulty} · {today.durationMin} min
-            </p>
-            <h1 className="font-display text-3xl md:text-4xl">{today.title}</h1>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <p className="absolute left-3 top-3 text-[11px] font-medium tracking-wide text-teal">FEATURED WALKTHROUGH</p>
+          <span className="absolute right-3 top-3 grid size-10 place-items-center rounded-full bg-teal text-ink">▶</span>
+          <div className="absolute bottom-3 left-3 right-3">
+            <h2 className="font-display text-2xl text-white">{today.title}</h2>
+            <p className="text-xs text-white/80">{today.durationMin}:00</p>
           </div>
         </div>
-        <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <Ring value={todayProgress?.progressPercent ?? 0} />
-            <p className="text-sm text-muted">
-              <span className="tabular-nums text-fg">{todayProgress?.progressPercent ?? 0}%</span>
-              {" · "}
-              {today.description}
-            </p>
-          </div>
-          <Link
-            to="/learn/$tutorialId"
-            params={{ tutorialId: today.id }}
-            className="inline-flex h-12 shrink-0 items-center justify-center rounded-full bg-teal px-5 font-medium text-ink sm:ml-auto"
-          >
-            {todayProgress?.progressPercent ? "Resume" : "Start tutorial"}
-          </Link>
-        </div>
-      </article>
+      </Link>
 
-      <section className="mt-5 overflow-hidden rounded-2xl bg-raise md:mt-6 md:grid md:grid-cols-3 md:gap-2 md:overflow-visible md:bg-transparent">
-        {[
-          { to: "/learn", label: "Learn", hint: "Today’s tool", icon: BookOpen },
-          { to: "/deck", label: "Deck", hint: "Watch or upload", icon: Clapperboard },
-          { to: "/studio", label: "Studio", hint: "Make a post", icon: Sparkles },
-        ].map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className="flex min-h-14 items-center gap-3 border-b border-line px-4 py-3 last:border-b-0 active:bg-surface md:block md:rounded-2xl md:border-0 md:bg-raise md:px-3 md:py-4 md:shadow-ring"
-          >
-            <item.icon className="size-5 text-teal" />
-            <span className="min-w-0 flex-1 md:block">
-              <span className="block text-sm font-medium">{item.label}</span>
-              <span className="block text-xs text-muted">{item.hint}</span>
-            </span>
-          </Link>
-        ))}
+      <section className="mt-5 rounded-3xl border border-line bg-raise p-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-medium">Your Progress</h2>
+          <p className="text-sm text-teal">Level: {level}</p>
+        </div>
+        <div className="mt-3 flex items-center gap-3">
+          <Ring value={percent} />
+          <p className="text-sm text-muted">
+            <span className="text-lg font-medium text-fg">{percent}%</span>
+            <span className="mt-1 block">{finished} of {totalLessons} lessons completed</span>
+          </p>
+        </div>
       </section>
 
-      <section className="mt-10">
-        <h2 className="font-display text-2xl">Continue</h2>
-        {continueRows.length === 0 ? (
-          <p className="mt-2 text-sm text-muted">Nothing in progress. Today’s pick is the door.</p>
-        ) : (
-          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-            {continueRows.map(({ row, tutorial }) => (
-              <Link
-                key={tutorial.id}
-                to="/learn/$tutorialId"
-                params={{ tutorialId: tutorial.id }}
-                className="w-64 shrink-0 overflow-hidden rounded-2xl bg-raise shadow-float"
-              >
-                <img src={tutorial.thumbnail} alt="" className="aspect-[3/2] w-full object-cover" />
-                <div className="p-3">
-                  <p className="text-sm">{tutorial.title}</p>
-                  <p className="mt-1 text-xs tabular-nums text-muted">{row.progressPercent}%</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-10">
-        <div className="flex items-baseline justify-between">
-          <h2 className="font-display text-2xl">Archive</h2>
-          <Link to="/learn" className="text-sm text-teal">
-            All lessons
-          </Link>
+      <section className="mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-medium">Categories</h2>
+          <Link to="/learn" className="text-sm text-teal">See All</Link>
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
-          {archive.map((tutorial) => (
-            <Link key={tutorial.id} to="/learn/$tutorialId" params={{ tutorialId: tutorial.id }} className="block">
-              <img src={tutorial.thumbnail} alt="" className="aspect-[3/2] w-full rounded-2xl object-cover" />
-              <p className="mt-2 text-sm">{tutorial.title}</p>
-              <p className="text-xs text-muted">
-                {tutorial.difficulty} · {tutorial.durationMin} min
-              </p>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {categories.map((item) => (
+            <Link key={item.label} to="/learn/$tutorialId" params={{ tutorialId: item.id }} className="rounded-2xl border border-line bg-raise px-2 py-4 text-center">
+              <item.icon className="mx-auto size-5 text-teal" />
+              <p className="mt-2 text-xs">{item.label}</p>
             </Link>
           ))}
         </div>
       </section>
+
+      <section className="mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-medium">Recommended for You</h2>
+          <Link to="/roadmap" className="text-sm text-teal">See All</Link>
+        </div>
+        <Link to="/learn/$tutorialId" params={{ tutorialId: recommended.id }} className="mt-3 flex items-center gap-3 rounded-2xl border border-line bg-raise p-3">
+          <img src={recommended.thumbnail} alt="" className="size-16 rounded-xl object-cover" />
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-medium">{recommended.title}</span>
+            <span className="mt-1 block text-xs text-muted">{recommended.difficulty} · {recommended.durationMin}:00</span>
+          </span>
+        </Link>
+      </section>
+      <p className="mt-4 text-center text-xs text-muted">Today’s pick swaps in <Countdown /></p>
     </div>
   );
 }

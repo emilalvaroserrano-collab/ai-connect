@@ -7,6 +7,7 @@ export const firebaseConfig = {
   storageBucket: "masterplan-1cd65.firebasestorage.app",
   messagingSenderId: "737894267682",
   appId: "1:737894267682:web:26d96704580c32222d037b",
+  measurementId: "G-F8G60GBV0S",
 } as const;
 
 export const MEMBERSHIP_FEE = 550;

@@ -11,9 +11,9 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
-      { title: "Daily Connect" },
+      { title: "AI Master Plan" },
       { name: "description", content: "One AI tool, taught every morning. ₱550 once." },
-      { name: "theme-color", content: "#071018" },
+      { name: "theme-color", content: "#141414" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -54,7 +54,7 @@ function HoldInactive() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   if (!ready || !session || !profile) return null;
   if (profile.membershipStatus === "active") return null;
-  if (pathname === "/checkout" || pathname === "/login" || pathname === "/join" || pathname === "/code/create" || pathname === "/admin") return null;
+  if (pathname === "/checkout" || pathname === "/login" || pathname === "/join" || pathname === "/start" || pathname === "/code/create" || pathname === "/admin") return null;
   return <Navigate to="/checkout" />;
 }
 

@@ -1,4 +1,8 @@
 {
-  "title": "Daily Connect",
-  "card": "custom"
+  "title": "AI Master Plan",
+  "description": "Walkthrough videos, short guides, and real tools to use AI properly.",
+  "card": "custom",
+  "image": "/og.jpg",
+  "banner": "/x-banner.jpg",
+  "color": "#d4af37"
 }

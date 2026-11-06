@@ -192,7 +192,7 @@ export function Player({
               setPlaying(false);
             }}
           >
-            {completed ? "Marked complete" : "Mark complete"}
+            {completed ? "Marked complete" : "Continue Learning"}
           </button>
         </section>
       </div>

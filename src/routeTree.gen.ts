@@ -20,7 +20,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MarketRouteImport } from './routes/market'
 import { Route as ModerateRouteImport } from './routes/moderate'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as StartRouteImport } from './routes/start'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as ToolsRouteImport } from './routes/tools'
 import { Route as WalletRouteImport } from './routes/wallet'
 import { Route as ApiMediaRouteImport } from './routes/api/media'
 import { Route as CodeCreateRouteImport } from './routes/code/create'
@@ -84,9 +87,24 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadmapRoute = RoadmapRouteImport.update({
+  id: '/roadmap',
+  path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ToolsRoute = ToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WalletRoute = WalletRouteImport.update({
@@ -137,7 +155,10 @@ export interface FileRoutesByFullPath {
   '/market': typeof MarketRoute
   '/moderate': typeof ModerateRoute
   '/profile': typeof ProfileRoute
+  '/roadmap': typeof RoadmapRoute
+  '/start': typeof StartRoute
   '/studio': typeof StudioRoute
+  '/tools': typeof ToolsRoute
   '/wallet': typeof WalletRoute
   '/api/media': typeof ApiMediaRouteWithChildren
   '/code/create': typeof CodeCreateRoute
@@ -158,7 +179,10 @@ export interface FileRoutesByTo {
   '/market': typeof MarketRoute
   '/moderate': typeof ModerateRoute
   '/profile': typeof ProfileRoute
+  '/roadmap': typeof RoadmapRoute
+  '/start': typeof StartRoute
   '/studio': typeof StudioRoute
+  '/tools': typeof ToolsRoute
   '/wallet': typeof WalletRoute
   '/api/media': typeof ApiMediaRouteWithChildren
   '/code/create': typeof CodeCreateRoute
@@ -180,7 +204,10 @@ export interface FileRoutesById {
   '/market': typeof MarketRoute
   '/moderate': typeof ModerateRoute
   '/profile': typeof ProfileRoute
+  '/roadmap': typeof RoadmapRoute
+  '/start': typeof StartRoute
   '/studio': typeof StudioRoute
+  '/tools': typeof ToolsRoute
   '/wallet': typeof WalletRoute
   '/api/media': typeof ApiMediaRouteWithChildren
   '/code/create': typeof CodeCreateRoute
@@ -203,7 +230,10 @@ export interface FileRouteTypes {
     | '/market'
     | '/moderate'
     | '/profile'
+    | '/roadmap'
+    | '/start'
     | '/studio'
+    | '/tools'
     | '/wallet'
     | '/api/media'
     | '/code/create'
@@ -224,7 +254,10 @@ export interface FileRouteTypes {
     | '/market'
     | '/moderate'
     | '/profile'
+    | '/roadmap'
+    | '/start'
     | '/studio'
+    | '/tools'
     | '/wallet'
     | '/api/media'
     | '/code/create'
@@ -245,7 +278,10 @@ export interface FileRouteTypes {
     | '/market'
     | '/moderate'
     | '/profile'
+    | '/roadmap'
+    | '/start'
     | '/studio'
+    | '/tools'
     | '/wallet'
     | '/api/media'
     | '/code/create'
@@ -267,7 +303,10 @@ export interface RootRouteChildren {
   MarketRoute: typeof MarketRoute
   ModerateRoute: typeof ModerateRoute
   ProfileRoute: typeof ProfileRoute
+  RoadmapRoute: typeof RoadmapRoute
+  StartRoute: typeof StartRoute
   StudioRoute: typeof StudioRoute
+  ToolsRoute: typeof ToolsRoute
   WalletRoute: typeof WalletRoute
   ApiMediaRoute: typeof ApiMediaRouteWithChildren
   CodeCreateRoute: typeof CodeCreateRoute
@@ -355,11 +394,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roadmap': {
+      id: '/roadmap'
+      path: '/roadmap'
+      fullPath: '/roadmap'
+      preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/studio': {
       id: '/studio'
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tools': {
+      id: '/tools'
+      path: '/tools'
+      fullPath: '/tools'
+      preLoaderRoute: typeof ToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/wallet': {
@@ -438,7 +498,10 @@ const rootRouteChildren: RootRouteChildren = {
   MarketRoute: MarketRoute,
   ModerateRoute: ModerateRoute,
   ProfileRoute: ProfileRoute,
+  RoadmapRoute: RoadmapRoute,
+  StartRoute: StartRoute,
   StudioRoute: StudioRoute,
+  ToolsRoute: ToolsRoute,
   WalletRoute: WalletRoute,
   ApiMediaRoute: ApiMediaRouteWithChildren,
   CodeCreateRoute: CodeCreateRoute,

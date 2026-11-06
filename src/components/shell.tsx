@@ -4,9 +4,11 @@ import {
   BookOpen,
   Clapperboard,
   Home,
+  Layers,
   LineChart,
   Menu,
   Radio,
+  Route,
   Shield,
   Sparkles,
   Store,
@@ -26,13 +28,15 @@ export function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <span className="inline-flex items-center gap-2 text-fg">
       <svg viewBox="0 0 32 32" className="size-8" aria-hidden>
-        <rect width="32" height="32" rx="8" fill="#122433" />
-        <circle cx="12.2" cy="16" r="5.1" fill="none" stroke="#2EE6C7" strokeWidth="2.4" />
-        <circle cx="19.8" cy="16" r="5.1" fill="none" stroke="#E8F4F2" strokeWidth="2.4" />
+        <rect width="32" height="32" rx="8" fill="#2a2a2a" stroke="#d4af37" strokeWidth="1.4" />
+        <text x="16" y="21" textAnchor="middle" fontSize="12" fontFamily="Roboto, sans-serif" fontWeight="700" fill="#f3e2a6">
+          AI
+        </text>
+        <path d="M8 24c6-2 10-2 16 0" fill="none" stroke="#d4af37" strokeWidth="1.6" strokeLinecap="round" />
       </svg>
       {compact ? null : (
         <span className="font-display text-lg leading-none">
-          Daily <span className="text-teal">Connect</span>
+          AI <span className="text-teal">Master Plan</span>
         </span>
       )}
     </span>
@@ -67,25 +71,30 @@ export function Paywall() {
 
 const primary = [
   { to: "/", label: "Home", icon: Home, exact: true },
-  { to: "/learn", label: "Learn", icon: BookOpen, exact: false },
-  { to: "/deck", label: "Deck", icon: Clapperboard, exact: false },
-  { to: "/studio", label: "Studio", icon: Sparkles, exact: false },
+  { to: "/learn", label: "Lessons", icon: BookOpen, exact: false },
+  { to: "/tools", label: "Tools", icon: Layers, exact: false },
+  { to: "/roadmap", label: "Roadmap", icon: Route, exact: true },
 ] as const;
 
+const profileTab = { to: "/profile", label: "Profile", icon: UserRound, exact: false } as const;
+
 const extra = [
+  { to: "/deck", label: "Deck", hint: "Watch or upload a reel", icon: Clapperboard, exact: false },
+  { to: "/studio", label: "Studio", hint: "Make a post", icon: Sparkles, exact: false },
   { to: "/live", label: "Live", hint: "Schedule a selling stream", icon: Radio, exact: false },
   { to: "/market", label: "Market", hint: "Products you can share", icon: Store, exact: false },
   { to: "/creator", label: "Creator", hint: "Views and earnings", icon: LineChart, exact: false },
   { to: "/wallet", label: "Wallet", hint: "Balance and payouts", icon: Wallet, exact: false },
-  { to: "/profile", label: "Profile", hint: "Your link and contacts", icon: UserRound, exact: false },
   { to: "/moderate", label: "Moderate", hint: "Review the queue", icon: Shield, exact: false },
 ] as const;
 
-const bottomTabs = primary.slice(0, 4);
+const bottomTabs = [...primary, profileTab];
 
 function screenTitle(pathname: string) {
   if (pathname === "/") return "Home";
-  if (pathname.startsWith("/learn")) return "Learn";
+  if (pathname.startsWith("/learn")) return "Lessons";
+  if (pathname.startsWith("/tools")) return "Tools";
+  if (pathname.startsWith("/roadmap")) return "Roadmap";
   if (pathname.startsWith("/deck")) return "Deck";
   if (pathname.startsWith("/studio")) return "Studio";
   if (pathname.startsWith("/live")) return "Live";
@@ -256,18 +265,6 @@ export function Shell({ children }: { children: ReactNode }) {
             </Link>
           );
         })}
-        <button
-          type="button"
-          className="flex min-h-14 flex-col items-center justify-center gap-0.5 text-[11px] font-medium"
-          aria-expanded={more}
-          aria-label="More"
-          onClick={() => setMore((value) => !value)}
-        >
-          <span className={cn("grid h-8 w-14 place-items-center rounded-2xl", moreActive || more ? "bg-teal/15 text-teal" : "text-muted")}>
-            {more ? <X className="size-[22px]" /> : <Menu className="size-[22px]" strokeWidth={moreActive ? 2.4 : 1.75} />}
-          </span>
-          <span className={moreActive || more ? "text-teal" : "text-muted"}>More</span>
-        </button>
       </nav>
       {more ? (
         <button type="button" aria-label="Close menu" className="absolute inset-0 z-30 bg-black/55 md:hidden" onClick={() => setMore(false)} />
