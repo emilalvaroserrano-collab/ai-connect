@@ -32,6 +32,12 @@ async function rput(path: string, value: unknown) {
   if (!res.ok) throw new Error("Could not save the post.");
 }
 
+const EDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function withinWindow(post: CommunityPost, uid: string) {
+  return post.uid === uid && Date.now() - post.createdAt < EDIT_WINDOW_MS;
+}
+
 function publicPost(post: CommunityPost, uid: string) {
   return {
     id: post.id,
@@ -42,6 +48,7 @@ function publicPost(post: CommunityPost, uid: string) {
     likes: post.likes,
     liked: Boolean(post.likedBy?.[uid]),
     mine: post.uid === uid,
+    canManage: withinWindow(post, uid),
     comments: post.comments ?? [],
   };
 }
@@ -87,6 +94,35 @@ export async function likeCommunity(input: { idToken: string; postId: string }) 
   const likes = Object.keys(likedBy).length;
   await rput(`/communityPosts/${input.postId}`, { ...post, likedBy, likes });
   return { likes, liked: Boolean(likedBy[profile.uid]) };
+}
+
+async function rdel(path: string) {
+  const res = await fetch(`${BASE}${path}.json`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Could not delete the post.");
+}
+
+async function ownedPost(idToken: string, postId: string) {
+  const profile = await loadProfile(idToken);
+  const post = await rget<CommunityPost>(`/communityPosts/${postId}`);
+  if (!post) throw new Error("That post is gone.");
+  if (post.uid !== profile.uid) throw new Error("Only the content author can change this post.");
+  if (Date.now() - post.createdAt >= EDIT_WINDOW_MS) throw new Error("Edit and delete close 24 hours after posting.");
+  return { profile, post };
+}
+
+export async function editCommunity(input: { idToken: string; postId: string; caption: string }) {
+  const { profile, post } = await ownedPost(input.idToken, input.postId);
+  const caption = input.caption.trim().slice(0, 500);
+  if (!caption) throw new Error("Write a caption.");
+  const next = { ...post, caption };
+  await rput(`/communityPosts/${post.id}`, next);
+  return publicPost(next, profile.uid);
+}
+
+export async function deleteCommunity(input: { idToken: string; postId: string }) {
+  const { post } = await ownedPost(input.idToken, input.postId);
+  await rdel(`/communityPosts/${post.id}`);
+  return { id: post.id };
 }
 
 export async function commentCommunity(input: { idToken: string; postId: string; text: string }) {

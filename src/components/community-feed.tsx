@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
-import { MessageCircle, ThumbsUp, Video } from "lucide-react";
+import { MessageCircle, Pencil, ThumbsUp, Trash2, Video } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { commentCommunity, likeCommunity, listCommunity, submitCommunity } from "@/lib/community.functions";
+import { commentCommunity, deleteCommunity, editCommunity, likeCommunity, listCommunity, submitCommunity } from "@/lib/community.functions";
 import { errorText } from "@/lib/manila";
 import { uploadMemberMedia } from "@/lib/upload-media";
 import type { Session } from "@/lib/types";
@@ -16,6 +16,7 @@ type Post = {
   likes: number;
   liked: boolean;
   mine: boolean;
+  canManage: boolean;
   comments: Comment[];
 };
 
@@ -104,6 +105,9 @@ export function CommunityFeed({ session, name }: { session: Session; name: strin
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState("");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editText, setEditText] = useState("");
+  const [now, setNow] = useState(() => Date.now());
 
   function reload() {
     return listCommunity({ data: { idToken: session.idToken } }).then((result) => setPosts(result.posts as Post[]));
@@ -111,6 +115,8 @@ export function CommunityFeed({ session, name }: { session: Session; name: strin
 
   useEffect(() => {
     void reload().catch((caught) => setError(errorText(caught)));
+    const timer = window.setInterval(() => setNow(Date.now()), 60_000);
+    return () => window.clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.idToken]);
 
@@ -130,18 +136,69 @@ export function CommunityFeed({ session, name }: { session: Session; name: strin
       {error ? <p className="mt-3 text-sm text-teal">{error}</p> : null}
       <div className="mt-4 space-y-3">
         {posts.length === 0 ? <p className="py-10 text-center text-sm text-muted">No videos yet. Upload the first one.</p> : null}
-        {posts.map((post) => (
+        {posts.map((post) => {
+          const canManage = post.mine && now - post.createdAt < 24 * 60 * 60 * 1000;
+          return (
           <article key={post.id} className="overflow-hidden rounded-2xl border border-line bg-raise">
-            <header className="flex items-center gap-3 px-4 py-3">
+            <header className="flex items-start gap-3 px-4 py-3">
               <span className="grid size-10 place-items-center rounded-full bg-surface text-sm font-medium text-teal">
                 {(post.name || "M").charAt(0).toUpperCase()}
               </span>
-              <span>
+              <span className="min-w-0 flex-1">
                 <span className="block text-sm font-medium">{post.name}</span>
-                <span className="block text-xs text-muted">{ago(post.createdAt)}</span>
+                <span className="mt-0.5 inline-flex rounded-full bg-teal/15 px-2 py-0.5 text-[11px] font-medium text-teal">Content Author</span>
+                <span className="mt-1 block text-xs text-muted">{ago(post.createdAt)}</span>
               </span>
+              {canManage ? (
+                <span className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    aria-label="Edit post"
+                    className="grid size-9 place-items-center rounded-full text-muted"
+                    onClick={() => {
+                      setEditing(post.id);
+                      setEditText(post.caption);
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Delete post"
+                    className="grid size-9 place-items-center rounded-full text-muted"
+                    onClick={() => {
+                      void deleteCommunity({ data: { idToken: session.idToken, postId: post.id } })
+                        .then(() => setPosts((rows) => rows.filter((row) => row.id !== post.id)))
+                        .catch((caught) => setError(errorText(caught)));
+                    }}
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </span>
+              ) : null}
             </header>
-            <p className="px-4 pb-3 text-sm">{post.caption}</p>
+            {editing === post.id ? (
+              <form
+                className="space-y-2 px-4 pb-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void editCommunity({ data: { idToken: session.idToken, postId: post.id, caption: editText } })
+                    .then((next) => {
+                      setPosts((rows) => rows.map((row) => (row.id === post.id ? { ...row, caption: next.caption } : row)));
+                      setEditing(null);
+                    })
+                    .catch((caught) => setError(errorText(caught)));
+                }}
+              >
+                <input value={editText} onChange={(event) => setEditText(event.target.value)} className="h-11 w-full rounded-xl border border-line bg-surface px-3" />
+                <div className="flex gap-2">
+                  <button type="submit" className="h-9 rounded-full bg-teal px-3 text-sm font-medium text-ink">Save</button>
+                  <button type="button" className="h-9 rounded-full px-3 text-sm text-muted" onClick={() => setEditing(null)}>Cancel</button>
+                </div>
+              </form>
+            ) : (
+              <p className="px-4 pb-3 text-sm">{post.caption}</p>
+            )}
             <video src={post.mediaUrl} controls playsInline className="max-h-[70dvh] w-full bg-black" />
             <p className="px-4 pt-2 text-xs text-muted">{post.likes} {post.likes === 1 ? "like" : "likes"} · {post.comments.length} comments</p>
             <div className="mt-1 grid grid-cols-2 border-y border-line">
@@ -192,7 +249,8 @@ export function CommunityFeed({ session, name }: { session: Session; name: strin
               />
             </form>
           </article>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

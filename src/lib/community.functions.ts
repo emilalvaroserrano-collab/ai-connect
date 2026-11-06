@@ -25,6 +25,20 @@ export const likeCommunity = createServerFn({ method: "POST" })
     return run(data);
   });
 
+export const deleteCommunity = createServerFn({ method: "POST" })
+  .validator(z.object({ idToken: token, postId }))
+  .handler(async ({ data }) => {
+    const { deleteCommunity: run } = await import("./community.server");
+    return run(data);
+  });
+
+export const editCommunity = createServerFn({ method: "POST" })
+  .validator(z.object({ idToken: token, postId, caption: z.string().trim().min(1).max(500) }))
+  .handler(async ({ data }) => {
+    const { editCommunity: run } = await import("./community.server");
+    return run(data);
+  });
+
 export const commentCommunity = createServerFn({ method: "POST" })
   .validator(z.object({ idToken: token, postId, text: z.string().trim().min(1).max(280) }))
   .handler(async ({ data }) => {
