@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { FieldIcon, FacebookIcon, PhoneIcon, SponsorDetails, WhatsAppIcon } from "@/components/contact-icons";
 import { Shell, Splash } from "@/components/shell";
-import { getNetwork, listCodes, place, saveContact } from "@/lib/connect.functions";
+import { getNetwork, getWallet, listCodes, place, saveContact } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
-import { errorText } from "@/lib/manila";
-import type { NetworkView, TreeNode } from "@/lib/types";
+import { errorText, peso } from "@/lib/manila";
+import type { NetworkView, TreeNode, WalletView } from "@/lib/types";
 
 export const Route = createFileRoute("/profile")({ component: ProfilePage });
 
@@ -35,6 +35,7 @@ function Branch({ node }: { node: TreeNode }) {
 function ProfilePage() {
   const { ready, session, profile, setProfile, signOut } = useConnect();
   const [network, setNetwork] = useState<NetworkView | null>(null);
+  const [wallet, setWallet] = useState<WalletView | null>(null);
   const [recruitUid, setRecruitUid] = useState("");
   const [parentUid, setParentUid] = useState("");
   const [error, setError] = useState("");
@@ -68,6 +69,19 @@ function ProfilePage() {
   useEffect(() => {
     if (!session) return;
     let cancel = false;
+    void getWallet({ data: { idToken: session.idToken } })
+      .then((next) => {
+        if (!cancel) setWallet(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancel = true;
+    };
+  }, [session]);
+
+  useEffect(() => {
+    if (!session) return;
+    let cancel = false;
     void listCodes({ data: { idToken: session.idToken } })
       .then((result) => {
         if (!cancel) setStock(result.codes);
@@ -88,10 +102,68 @@ function ProfilePage() {
   );
   const parents = network ? flatten(network.tree) : [];
 
+  const unilevelRows = (wallet?.transactions ?? []).filter((tx) => tx.type === "unilevel");
+
   return (
     <Shell>
       <div className="mx-auto max-w-3xl px-5 py-6 md:px-8">
-        <h1 className="font-display text-4xl">{profile.name || "Member"}</h1>
+        <div className="md:hidden">
+          <section className="rounded-3xl border border-line bg-raise p-4">
+            <p className="text-xs uppercase tracking-wide text-muted">Wallet</p>
+            <p className="mt-2 text-sm text-muted">Total accumulated</p>
+            <p className="font-display text-4xl tabular-nums">{wallet ? peso(wallet.accumulated) : "—"}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <div className="rounded-2xl bg-surface p-3">
+                <p className="text-xs text-muted">Available</p>
+                <p className="mt-1 text-lg tabular-nums">{wallet ? peso(wallet.available) : "—"}</p>
+              </div>
+              <div className="rounded-2xl bg-surface p-3">
+                <p className="text-xs text-muted">Requested</p>
+                <p className="mt-1 text-lg tabular-nums">{wallet ? peso(wallet.pendingPayout) : "—"}</p>
+              </div>
+            </div>
+          </section>
+          <section className="mt-3 rounded-3xl border border-line bg-raise p-4">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-base font-medium">Unilevel</h2>
+              <p className="text-sm text-teal">{wallet ? peso(wallet.accruing) : "—"}</p>
+            </div>
+            <p className="mt-1 text-xs text-muted">₱10 per level, up to 10. Posts on the 1st. Line size {wallet?.teamSize ?? 0}.</p>
+            <dl className="mt-3 grid grid-cols-2 gap-2">
+              <div className="rounded-2xl bg-surface p-3">
+                <dt className="text-xs text-muted">Direct paid</dt>
+                <dd className="mt-1 tabular-nums">{wallet?.directPaid ?? 0}</dd>
+              </div>
+              <div className="rounded-2xl bg-surface p-3">
+                <dt className="text-xs text-muted">Referral paid</dt>
+                <dd className="mt-1 tabular-nums">{wallet ? peso(wallet.directBonus) : "—"}</dd>
+              </div>
+            </dl>
+            {unilevelRows.length > 0 ? (
+              <ul className="mt-3 divide-y divide-line">
+                {unilevelRows.slice(0, 6).map((tx) => (
+                  <li key={tx.id} className="flex items-center justify-between py-2 text-sm">
+                    <span className="text-muted">{tx.status === "scheduled" ? "Posts on the 1st" : tx.status}</span>
+                    <span className="tabular-nums">{peso(tx.amount)}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-muted">No unilevel yet. Place a recruit to schedule ₱10.</p>
+            )}
+          </section>
+          <section className="mt-3 rounded-3xl border border-line bg-raise p-4">
+            <h2 className="text-base font-medium">Downline genealogy</h2>
+            {network ? (
+              <ul className="mt-2">
+                <Branch node={network.tree} />
+              </ul>
+            ) : (
+              <p className="mt-2 text-sm text-muted">Loading the line…</p>
+            )}
+          </section>
+        </div>
+        <h1 className="mt-6 font-display text-4xl md:mt-0">{profile.name || "Member"}</h1>
         <p className="mt-1 text-muted">{profile.email}</p>
         <p className="mt-4 text-sm">
           Membership{" "}
@@ -249,7 +321,7 @@ function ProfilePage() {
             </form>
           )}
         </section>
-        <section className="mt-10">
+        <section className="mt-10 hidden md:block">
           <h2 className="font-display text-2xl">Your line</h2>
           {network ? (
             <ul className="mt-2">

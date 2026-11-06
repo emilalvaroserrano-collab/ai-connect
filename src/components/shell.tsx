@@ -79,6 +79,7 @@ const primary = [
 const profileTab = { to: "/profile", label: "Profile", icon: UserRound, exact: false } as const;
 
 const extra = [
+  { to: "/community", label: "Community", hint: "Member videos", icon: Clapperboard, exact: false },
   { to: "/deck", label: "Deck", hint: "Watch or upload a reel", icon: Clapperboard, exact: false },
   { to: "/studio", label: "Studio", hint: "Make a post", icon: Sparkles, exact: false },
   { to: "/live", label: "Live", hint: "Schedule a selling stream", icon: Radio, exact: false },
@@ -95,6 +96,7 @@ function screenTitle(pathname: string) {
   if (pathname.startsWith("/learn")) return "Lessons";
   if (pathname.startsWith("/tools")) return "Tools";
   if (pathname.startsWith("/roadmap")) return "Roadmap";
+  if (pathname.startsWith("/community")) return "Community";
   if (pathname.startsWith("/deck")) return "Deck";
   if (pathname.startsWith("/studio")) return "Studio";
   if (pathname.startsWith("/live")) return "Live";

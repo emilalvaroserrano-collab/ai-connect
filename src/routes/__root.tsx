@@ -54,7 +54,7 @@ function HoldInactive() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   if (!ready || !session || !profile) return null;
   if (profile.membershipStatus === "active") return null;
-  if (pathname === "/checkout" || pathname === "/login" || pathname === "/join" || pathname === "/start" || pathname === "/code/create" || pathname === "/admin") return null;
+  if (pathname === "/checkout" || pathname === "/login" || pathname === "/join" || pathname === "/start" || pathname === "/community" || pathname === "/code/create" || pathname === "/admin") return null;
   return <Navigate to="/checkout" />;
 }
 

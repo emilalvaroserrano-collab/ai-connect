@@ -6,8 +6,8 @@ export const Route = createFileRoute("/api/media")({
       POST: async ({ request }: { request: Request }) => {
         try {
           const idToken = request.headers.get("x-id-token") || "";
-          const { requireActiveMember } = await import("@/lib/firebase.server");
-          await requireActiveMember(idToken);
+          const { loadProfile } = await import("@/lib/firebase.server");
+          await loadProfile(idToken);
           const { signVideoUpload } = await import("@/lib/cloudinary.server");
           return Response.json(signVideoUpload());
         } catch (error) {

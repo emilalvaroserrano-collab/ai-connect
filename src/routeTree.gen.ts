@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CreatorRouteImport } from './routes/creator'
 import { Route as DeckRouteImport } from './routes/deck'
 import { Route as JoinRouteImport } from './routes/join'
@@ -45,6 +46,11 @@ const AdminRoute = AdminRouteImport.update({
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreatorRoute = CreatorRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
@@ -196,6 +204,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
+  '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/community'
     | '/creator'
     | '/deck'
     | '/join'
@@ -246,6 +256,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/community'
     | '/creator'
     | '/deck'
     | '/join'
@@ -270,6 +281,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/checkout'
+    | '/community'
     | '/creator'
     | '/deck'
     | '/join'
@@ -295,6 +307,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
+  CommunityRoute: typeof CommunityRoute
   CreatorRoute: typeof CreatorRoute
   DeckRoute: typeof DeckRoute
   JoinRoute: typeof JoinRoute
@@ -336,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: '/checkout'
       fullPath: '/checkout'
       preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/creator': {
@@ -490,6 +510,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
+  CommunityRoute: CommunityRoute,
   CreatorRoute: CreatorRoute,
   DeckRoute: DeckRoute,
   JoinRoute: JoinRoute,

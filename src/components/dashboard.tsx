@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Bot, Briefcase, ImageIcon, MessageSquare, Wrench, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { HomeUpload } from "@/components/community-feed";
 import { getDesk } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
 import { errorText, formatClock, secondsUntilManilaMidnight } from "@/lib/manila";
@@ -128,6 +129,7 @@ export function Dashboard() {
       >
         <input name="q" placeholder="Search lessons, tools, or topics..." className="h-12 w-full rounded-2xl border border-line bg-raise px-4" />
       </form>
+      {session ? <HomeUpload session={session} name={desk.profile.name || firstName} /> : null}
 
       <Link to="/learn/$tutorialId" params={{ tutorialId: today.id }} className="mt-5 block overflow-hidden rounded-3xl border border-line bg-raise">
         <div className="relative aspect-[16/9]">
