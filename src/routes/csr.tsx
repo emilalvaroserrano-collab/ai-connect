@@ -175,6 +175,18 @@ function CsrPage() {
               <input name="price" placeholder={plan === "sell" ? "Sale price, optional" : "Monthly rent, optional"} className="h-12 w-full rounded-xl border border-line bg-raise px-3" />
             ) : null}
             {error ? <p className="text-sm text-teal">{error}</p> : null}
+            <section className="overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#1aa7b8] via-[#146a86] to-[#0c2744] px-6 py-8 text-center text-white">
+              <p className="text-xs uppercase tracking-[0.16em] text-white/70">Preview</p>
+              <span className="mx-auto mt-4 grid size-20 place-items-center rounded-full bg-white text-[#c5d0dc]">
+                <svg viewBox="0 0 64 64" className="size-12" aria-hidden>
+                  <circle cx="32" cy="24" r="10" fill="currentColor" />
+                  <path d="M14 52c2.5-10 10-15 18-15s15.5 5 18 15" fill="currentColor" />
+                </svg>
+              </span>
+              <p className="mt-4 text-sm text-white/80">Calling</p>
+              <p className="mt-1 text-3xl font-medium">{persona.trim() || "Mike"}</p>
+              <p className="mt-2 text-xs text-white/70">Voice · {voiceId}</p>
+            </section>
             <div className="flex gap-2">
               <button type="button" className="h-12 rounded-full px-4 text-sm text-muted" onClick={() => setStep(2)}>
                 Back
