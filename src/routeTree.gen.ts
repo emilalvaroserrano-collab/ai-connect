@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CreatorRouteImport } from './routes/creator'
+import { Route as CsrRouteImport } from './routes/csr'
 import { Route as DeckRouteImport } from './routes/deck'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as LiveRouteImport } from './routes/live'
@@ -30,6 +31,7 @@ import { Route as ApiMediaRouteImport } from './routes/api/media'
 import { Route as CodeCreateRouteImport } from './routes/code/create'
 import { Route as LearnIndexRouteImport } from './routes/learn/index'
 import { Route as LearnTutorialIdRouteImport } from './routes/learn/$tutorialId'
+import { Route as UserIdCsrAgentSlugRouteImport } from './routes/$userId/csr/$agentSlug'
 import { Route as ApiMediaIdRouteImport } from './routes/api/media/$id'
 import { Route as RMemberCodeProductCodeRouteImport } from './routes/r/$memberCode/$productCode'
 
@@ -56,6 +58,11 @@ const CommunityRoute = CommunityRouteImport.update({
 const CreatorRoute = CreatorRouteImport.update({
   id: '/creator',
   path: '/creator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CsrRoute = CsrRouteImport.update({
+  id: '/csr',
+  path: '/csr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DeckRoute = DeckRouteImport.update({
@@ -138,6 +145,11 @@ const LearnTutorialIdRoute = LearnTutorialIdRouteImport.update({
   path: '/learn/$tutorialId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserIdCsrAgentSlugRoute = UserIdCsrAgentSlugRouteImport.update({
+  id: '/$userId/csr/$agentSlug',
+  path: '/$userId/csr/$agentSlug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMediaIdRoute = ApiMediaIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -155,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
+  '/csr': typeof CsrRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
   '/live': typeof LiveRoute
@@ -171,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/code/create': typeof CodeCreateRoute
   '/learn/$tutorialId': typeof LearnTutorialIdRoute
   '/learn/': typeof LearnIndexRoute
+  '/$userId/csr/$agentSlug': typeof UserIdCsrAgentSlugRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/r/$memberCode/$productCode': typeof RMemberCodeProductCodeRoute
 }
@@ -180,6 +194,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
+  '/csr': typeof CsrRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
   '/live': typeof LiveRoute
@@ -196,6 +211,7 @@ export interface FileRoutesByTo {
   '/code/create': typeof CodeCreateRoute
   '/learn/$tutorialId': typeof LearnTutorialIdRoute
   '/learn': typeof LearnIndexRoute
+  '/$userId/csr/$agentSlug': typeof UserIdCsrAgentSlugRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/r/$memberCode/$productCode': typeof RMemberCodeProductCodeRoute
 }
@@ -206,6 +222,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creator': typeof CreatorRoute
+  '/csr': typeof CsrRoute
   '/deck': typeof DeckRoute
   '/join': typeof JoinRoute
   '/live': typeof LiveRoute
@@ -222,6 +239,7 @@ export interface FileRoutesById {
   '/code/create': typeof CodeCreateRoute
   '/learn/$tutorialId': typeof LearnTutorialIdRoute
   '/learn/': typeof LearnIndexRoute
+  '/$userId/csr/$agentSlug': typeof UserIdCsrAgentSlugRoute
   '/api/media/$id': typeof ApiMediaIdRoute
   '/r/$memberCode/$productCode': typeof RMemberCodeProductCodeRoute
 }
@@ -233,6 +251,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creator'
+    | '/csr'
     | '/deck'
     | '/join'
     | '/live'
@@ -249,6 +268,7 @@ export interface FileRouteTypes {
     | '/code/create'
     | '/learn/$tutorialId'
     | '/learn/'
+    | '/$userId/csr/$agentSlug'
     | '/api/media/$id'
     | '/r/$memberCode/$productCode'
   fileRoutesByTo: FileRoutesByTo
@@ -258,6 +278,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creator'
+    | '/csr'
     | '/deck'
     | '/join'
     | '/live'
@@ -274,6 +295,7 @@ export interface FileRouteTypes {
     | '/code/create'
     | '/learn/$tutorialId'
     | '/learn'
+    | '/$userId/csr/$agentSlug'
     | '/api/media/$id'
     | '/r/$memberCode/$productCode'
   id:
@@ -283,6 +305,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creator'
+    | '/csr'
     | '/deck'
     | '/join'
     | '/live'
@@ -299,6 +322,7 @@ export interface FileRouteTypes {
     | '/code/create'
     | '/learn/$tutorialId'
     | '/learn/'
+    | '/$userId/csr/$agentSlug'
     | '/api/media/$id'
     | '/r/$memberCode/$productCode'
   fileRoutesById: FileRoutesById
@@ -309,6 +333,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CommunityRoute: typeof CommunityRoute
   CreatorRoute: typeof CreatorRoute
+  CsrRoute: typeof CsrRoute
   DeckRoute: typeof DeckRoute
   JoinRoute: typeof JoinRoute
   LiveRoute: typeof LiveRoute
@@ -325,6 +350,7 @@ export interface RootRouteChildren {
   CodeCreateRoute: typeof CodeCreateRoute
   LearnTutorialIdRoute: typeof LearnTutorialIdRoute
   LearnIndexRoute: typeof LearnIndexRoute
+  UserIdCsrAgentSlugRoute: typeof UserIdCsrAgentSlugRoute
   RMemberCodeProductCodeRoute: typeof RMemberCodeProductCodeRoute
 }
 
@@ -363,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/creator'
       fullPath: '/creator'
       preLoaderRoute: typeof CreatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/csr': {
+      id: '/csr'
+      path: '/csr'
+      fullPath: '/csr'
+      preLoaderRoute: typeof CsrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/deck': {
@@ -477,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnTutorialIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$userId/csr/$agentSlug': {
+      id: '/$userId/csr/$agentSlug'
+      path: '/$userId/csr/$agentSlug'
+      fullPath: '/$userId/csr/$agentSlug'
+      preLoaderRoute: typeof UserIdCsrAgentSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/media/$id': {
       id: '/api/media/$id'
       path: '/$id'
@@ -512,6 +552,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CommunityRoute: CommunityRoute,
   CreatorRoute: CreatorRoute,
+  CsrRoute: CsrRoute,
   DeckRoute: DeckRoute,
   JoinRoute: JoinRoute,
   LiveRoute: LiveRoute,
@@ -528,6 +569,7 @@ const rootRouteChildren: RootRouteChildren = {
   CodeCreateRoute: CodeCreateRoute,
   LearnTutorialIdRoute: LearnTutorialIdRoute,
   LearnIndexRoute: LearnIndexRoute,
+  UserIdCsrAgentSlugRoute: UserIdCsrAgentSlugRoute,
   RMemberCodeProductCodeRoute: RMemberCodeProductCodeRoute,
 }
 export const routeTree = rootRouteImport

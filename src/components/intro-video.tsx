@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Logo } from "@/components/shell";
 
 const SRC = "https://dailyconnect.grok.me/landing/mobile.mp4";
 
@@ -27,7 +28,7 @@ export function IntroVideo({ onDone }: { onDone: () => void }) {
       />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 to-transparent" />
       <div className="absolute inset-x-0 top-[max(0.75rem,env(safe-area-inset-top))] flex items-center justify-between px-4">
-        <p className="text-sm font-medium text-white">AI Master Plan</p>
+        <Logo />
         <button
           type="button"
           onClick={onDone}

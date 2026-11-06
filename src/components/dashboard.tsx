@@ -3,6 +3,7 @@ import { Bot, Briefcase, ImageIcon, MessageSquare, Wrench, Zap } from "lucide-re
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { HomeUpload } from "@/components/community-feed";
+import { Logo } from "@/components/shell";
 import { getDesk } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
 import { errorText, formatClock, secondsUntilManilaMidnight } from "@/lib/manila";
@@ -111,12 +112,10 @@ export function Dashboard() {
     { label: "Chatbots", icon: Bot, id: "ollama" },
     { label: "Best Tools", icon: Wrench, id: "evals" },
   ];
-  const recommended = desk.tutorials.find((item) => item.id !== today.id) ?? today;
-
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 md:px-8">
       <p className="text-sm text-teal">Welcome back!</p>
-      <h1 className="font-display text-3xl">AI Master Plan</h1>
+      <Logo />
       <p className="mt-1 text-sm text-muted">Good to see you, {firstName}.</p>
       <form
         className="mt-4"
@@ -175,15 +174,13 @@ export function Dashboard() {
 
       <section className="mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-medium">Recommended for You</h2>
-          <Link to="/roadmap" className="text-sm text-teal">See All</Link>
+          <h2 className="text-base font-medium">Master Piece</h2>
+          <Link to="/csr" className="text-sm text-teal">Open</Link>
         </div>
-        <Link to="/learn/$tutorialId" params={{ tutorialId: recommended.id }} className="mt-3 flex items-center gap-3 rounded-2xl border border-line bg-raise p-3">
-          <img src={recommended.thumbnail} alt="" className="size-16 rounded-xl object-cover" />
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-medium">{recommended.title}</span>
-            <span className="mt-1 block text-xs text-muted">{recommended.difficulty} · {recommended.durationMin}:00</span>
-          </span>
+        <Link to="/csr" className="mt-3 block rounded-2xl border border-line bg-raise p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-teal">Step by step</p>
+          <p className="mt-1 text-base font-medium">Creating a CSR Agent</p>
+          <p className="mt-1 text-sm text-muted">A preset agent you can use, sell, or rent. You only fill the facts that belong to the business.</p>
         </Link>
       </section>
       <p className="mt-4 text-center text-xs text-muted">Today’s pick swaps in <Countdown /></p>

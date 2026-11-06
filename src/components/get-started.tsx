@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Logo } from "@/components/shell";
 
 const points = ["Walkthroughs", "Short guides", "Real tools"];
 
@@ -8,12 +9,7 @@ export function GetStarted() {
       <div className="pointer-events-none absolute -left-16 top-24 size-56 rounded-full bg-[#d4af37]/20 blur-3xl" />
       <div className="pointer-events-none absolute -right-20 bottom-16 size-64 rounded-full bg-white/10 blur-3xl" />
       <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col">
-        <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl border border-white/15 bg-black/40 text-sm font-medium text-[#f3e2a6] backdrop-blur">
-            AI
-          </span>
-          <span className="text-sm tracking-[0.22em] text-white/70">MASTER PLAN</span>
-        </div>
+        <Logo />
         <div className="mt-16">
           <p className="text-xs font-medium uppercase tracking-[0.28em] text-[#f3e2a6]">Learn · Apply · Master</p>
           <h1 className="mt-4 font-display text-5xl leading-[0.95] text-white">

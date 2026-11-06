@@ -96,7 +96,7 @@ function screenTitle(pathname: string) {
   if (pathname.startsWith("/learn")) return "Lessons";
   if (pathname.startsWith("/tools")) return "Tools";
   if (pathname.startsWith("/roadmap")) return "Roadmap";
-  if (pathname.startsWith("/community")) return "Community";
+  if (pathname.startsWith("/csr") || pathname.includes("/csr/")) return "CSR Agent";
   if (pathname.startsWith("/deck")) return "Deck";
   if (pathname.startsWith("/studio")) return "Studio";
   if (pathname.startsWith("/live")) return "Live";
