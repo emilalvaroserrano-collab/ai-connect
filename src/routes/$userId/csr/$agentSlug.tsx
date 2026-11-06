@@ -62,12 +62,12 @@ function AgentPage() {
   const name = agent?.persona?.trim() || "Mike";
 
   return (
-    <main className="grid min-h-dvh place-items-center bg-[#071018] px-6">
+    <main className="fixed inset-0 z-50 h-dvh w-full overflow-hidden bg-gradient-to-b from-[#1aa7b8] via-[#146a86] to-[#0c2744] text-white">
       {missing || !agent ? (
-        <p className="text-sm text-white/70">That agent is not published.</p>
+        <p className="grid h-full place-items-center text-sm text-white/70">That agent is not published.</p>
       ) : (
-        <div className="relative h-[640px] w-[300px] max-w-full overflow-hidden rounded-[2.6rem] bg-gradient-to-b from-[#1aa7b8] via-[#146a86] to-[#0c2744] text-white shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-          <div className="flex items-center justify-between px-6 pt-5 text-[13px] font-medium">
+        <div className="relative flex h-full flex-col pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]">
+          <div className="flex items-center justify-between px-6 text-[13px] font-medium">
             <span>09:00</span>
             <span className="flex items-center gap-1.5">
               <svg viewBox="0 0 18 12" className="h-3 w-4" aria-hidden>
@@ -84,8 +84,8 @@ function AgentPage() {
             </span>
           </div>
           <div className="mt-16 flex flex-col items-center">
-            <span className="grid size-28 place-items-center rounded-full bg-white/25">
-              <span className="grid size-24 place-items-center rounded-full bg-white text-[#c5d0dc]">
+            <span className="grid size-32 place-items-center rounded-full bg-white/25">
+              <span className="grid size-28 place-items-center rounded-full bg-white text-[#c5d0dc]">
                 <svg viewBox="0 0 64 64" className="size-16" aria-hidden>
                   <circle cx="32" cy="24" r="10" fill="currentColor" />
                   <path d="M14 52c2.5-10 10-15 18-15s15.5 5 18 15" fill="currentColor" />
@@ -95,7 +95,7 @@ function AgentPage() {
             <p className="mt-6 text-sm text-white/80">{status}</p>
             <h1 className="mt-1 text-3xl font-medium tracking-tight">{name}</h1>
           </div>
-          <div className="absolute inset-x-0 bottom-16 flex flex-col items-center">
+          <div className="mt-auto flex flex-col items-center">
             <div className="mb-10 flex gap-10 text-white">
               <button
                 type="button"
@@ -130,7 +130,7 @@ function AgentPage() {
                 </svg>
               </button>
             </div>
-            {note ? <p className="mt-4 max-w-[220px] text-center text-xs text-white/80">{note}</p> : null}
+            {note ? <p className="mt-4 max-w-[260px] text-center text-xs text-white/80">{note}</p> : null}
           </div>
         </div>
       )}

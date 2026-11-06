@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Shell, Splash } from "@/components/shell";
 import { listCsr, saveCsr } from "@/lib/csr.functions";
@@ -198,21 +198,18 @@ function CsrPage() {
           </form>
         )}
         {made ? (
-          <p className="mt-4 text-sm">
-            Live at{" "}
-            <Link to="/$userId/csr/$agentSlug" params={{ userId: profile.uid, agentSlug: made.slug }} className="text-teal">
-              {made.path}
-            </Link>
-          </p>
+          <a href={made.path} target="_blank" rel="noreferrer" className="mt-4 block break-all text-sm text-teal">
+            Open full screen: {made.path}
+          </a>
         ) : null}
         {agents.length > 0 ? (
           <ul className="mt-6 space-y-2">
             {agents.map((agent) => (
               <li key={agent.id}>
-                <Link to="/$userId/csr/$agentSlug" params={{ userId: profile.uid, agentSlug: agent.slug }} className="block rounded-2xl border border-line bg-raise px-4 py-3">
+                <a href={agent.path} target="_blank" rel="noreferrer" className="block rounded-2xl border border-line bg-raise px-4 py-3">
                   <span className="block text-sm font-medium">{agent.persona ? `${agent.persona} · ${agent.business}` : agent.business}</span>
                   <span className="mt-1 block text-xs text-muted">{agent.plan} · {agent.path}</span>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>
