@@ -25,6 +25,7 @@ export type CsrAgent = {
   voicemailMessage?: string;
   endCallMessage?: string;
   voiceId?: string;
+  systemPrompt?: string;
   vapiAssistantId: string;
   createdAt: number;
   updatedAt: number;
@@ -88,6 +89,7 @@ function publicAgent(agent: CsrAgent) {
     voicemailMessage: agent.voicemailMessage || "",
     endCallMessage: agent.endCallMessage || "",
     voiceId: agent.voiceId || "Elliot",
+    systemPrompt: agent.systemPrompt || "",
     vapiAssistantId: agent.vapiAssistantId || "",
     publicKey: VAPI_PUBLIC_KEY,
     path: `/${agent.uid}/csr/${agent.slug}`,
@@ -143,6 +145,7 @@ export async function saveCsr(input: {
     systemPrompt: input.systemPrompt,
   };
   const vapi = await createVapiAssistant(facts);
+  const spoken = personalizeAssistant(facts);
   const id = `agt${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}`;
   const head = `${slugify(persona)}-${slugify(business)}`.replace(/-+$/g, "").slice(0, 40);
   const slug = `${head}-${id}`;
@@ -161,10 +164,11 @@ export async function saveCsr(input: {
     refund: facts.refund || "Do not process refunds. Offer a person instead.",
     plan: input.plan,
     price: input.price.trim().slice(0, 40),
-    firstMessage: vapi.firstMessage,
-    voicemailMessage: input.voicemailMessage?.trim() || "",
-    endCallMessage: input.endCallMessage?.trim() || "",
-    voiceId: input.voiceId || "Elliot",
+    firstMessage: spoken.firstMessage,
+    voicemailMessage: spoken.voicemailMessage,
+    endCallMessage: spoken.endCallMessage,
+    voiceId: spoken.voice.voiceId,
+    systemPrompt: spoken.model.messages[0]?.content || "",
     vapiAssistantId: vapi.id,
     createdAt: now,
     updatedAt: now,

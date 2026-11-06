@@ -1,4 +1,5 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Shell, Splash } from "@/components/shell";
 import { listCsr, saveCsr } from "@/lib/csr.functions";
@@ -175,17 +176,18 @@ function CsrPage() {
               <input name="price" placeholder={plan === "sell" ? "Sale price, optional" : "Monthly rent, optional"} className="h-12 w-full rounded-xl border border-line bg-raise px-3" />
             ) : null}
             {error ? <p className="text-sm text-teal">{error}</p> : null}
-            <section className="overflow-hidden rounded-[2rem] bg-gradient-to-b from-[#1aa7b8] via-[#146a86] to-[#0c2744] px-6 py-8 text-center text-white">
-              <p className="text-xs uppercase tracking-[0.16em] text-white/70">Preview</p>
-              <span className="mx-auto mt-4 grid size-20 place-items-center rounded-full bg-white text-[#c5d0dc]">
-                <svg viewBox="0 0 64 64" className="size-12" aria-hidden>
-                  <circle cx="32" cy="24" r="10" fill="currentColor" />
-                  <path d="M14 52c2.5-10 10-15 18-15s15.5 5 18 15" fill="currentColor" />
-                </svg>
+            <section className="overflow-hidden rounded-[2rem] border border-[#3f3f3f] bg-[#141414] bg-[radial-gradient(280px_160px_at_50%_0%,rgba(212,175,55,0.35),transparent_70%)] px-6 py-8 text-center text-[#f3f3f3]">
+              <p className="text-xs uppercase tracking-[0.16em] text-[#d4af37]">Preview</p>
+              <span className="mx-auto mt-4 grid size-20 place-items-center rounded-full bg-[#1e1e1e] text-[#f3e2a6] ring-1 ring-[#d4af37]">
+                <UserRound className="size-9" strokeWidth={1.5} />
               </span>
-              <p className="mt-4 text-sm text-white/80">Calling</p>
+              <p className="mt-4 text-sm text-[#a3a3a3]">Calling</p>
               <p className="mt-1 text-3xl font-medium">{persona.trim() || "Mike"}</p>
-              <p className="mt-2 text-xs text-white/70">Voice · {voiceId}</p>
+              <div className="mx-auto mt-4 flex h-8 items-end gap-1" aria-hidden>
+                {[8, 14, 20, 16, 10, 18, 12].map((height) => (
+                  <span key={height} className="w-1 rounded-full bg-[#d4af37]" style={{ height }} />
+                ))}
+              </div>
             </section>
             <div className="flex gap-2">
               <button type="button" className="h-12 rounded-full px-4 text-sm text-muted" onClick={() => setStep(2)}>
