@@ -412,14 +412,14 @@ export async function generateStudio(input: {
     const system =
       input.output === "caption"
         ? "Write one social caption under 400 characters for Daily Connect, a Philippine learning desk. No income guarantees, no medical claims, no celebrity names. End with: Affiliate link. Daily Connect may earn a commission."
-        : "Write a 90-second live-selling script for one host. Short lines. No income guarantees. Mention the price in pesos and that it is an affiliate link.";
-    let text = await grokText(system, `${product.name}. ${product.description}. Price ₱${product.price}. Style: ${style}. ${product.guidelines}`);
+        : "Write a 90-second live-selling script for one host. Short lines. No income guarantees. Mention the price in US dollars and that it is an affiliate link.";
+    let text = await grokText(system, `${product.name}. ${product.description}. Price $${product.price}. Style: ${style}. ${product.guidelines}`);
     const source = text ? "grok" : "desk-draft";
     if (!text) {
       text =
         input.output === "caption"
-          ? withDisclosure(`${product.name} — ${product.description} ₱${product.price.toLocaleString("en-PH")}.`)
-          : `Open on the product. ${product.name}, ₱${product.price.toLocaleString("en-PH")}. ${product.description} Close with the tracked link and say it is an affiliate link.`;
+          ? withDisclosure(`${product.name} — ${product.description} $${product.price.toLocaleString("en-US")}.`)
+          : `Open on the product. ${product.name}, $${product.price.toLocaleString("en-US")}. ${product.description} Close with the tracked link and say it is an affiliate link.`;
     }
     const id = nid("draft");
     const draft = {
@@ -801,7 +801,7 @@ export async function confirmOrder(input: {
     at: now,
   });
   if (action === "credit") {
-    await notify(memberId, `aff_${input.orderId}`, "Affiliate commission", `₱${split.member} from ${product.name}. Merchant confirmed the order.`);
+    await notify(memberId, `aff_${input.orderId}`, "Affiliate commission", `$${split.member} from ${product.name}. Merchant confirmed the order.`);
   }
   return { action, member: split.member };
 }
@@ -848,7 +848,7 @@ export async function recordRevenue(input: {
       amount: share.share,
       note: `50% of net on ${post.title}`,
     });
-    await notify(post.creatorId, `earn_${input.reportId}`, "Creator share confirmed", `₱${share.share} posted to the wallet. Estimated figures were not paid.`);
+    await notify(post.creatorId, `earn_${input.reportId}`, "Creator share confirmed", `$${share.share} posted to the wallet. Estimated figures were not paid.`);
   }
   await rput(`/moderationAuditLogs/${nid("audit")}`, {
     action: `revenue-${input.status}`,

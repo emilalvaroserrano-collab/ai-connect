@@ -57,7 +57,7 @@ export function Paywall() {
       <p className="text-sm text-teal">Membership</p>
       <h1 className="mt-2 font-display text-4xl">The desk is locked.</h1>
       <p className="mt-3 text-muted">
-        Pay ₱550 directly to your sponsor. They give you a code. The app does not take the money.
+        Pay $8.73 directly to your sponsor. They give you a code. The app does not take the money.
       </p>
       <Link
         to="/checkout"

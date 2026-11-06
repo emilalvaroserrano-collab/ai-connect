@@ -5,6 +5,7 @@ import { FieldIcon, FacebookIcon, PhoneIcon, SponsorDetails, WhatsAppIcon } from
 import { Shell, Splash } from "@/components/shell";
 import { getNetwork, getWallet, listCodes, place, saveContact } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
+import { DIRECT_BONUS, LEVEL_BONUS } from "@/lib/firebase-config";
 import { errorText, peso } from "@/lib/manila";
 import type { NetworkView, TreeNode, WalletView } from "@/lib/types";
 
@@ -128,7 +129,7 @@ function ProfilePage() {
               <h2 className="text-base font-medium">Unilevel</h2>
               <p className="text-sm text-teal">{wallet ? peso(wallet.accruing) : "—"}</p>
             </div>
-            <p className="mt-1 text-xs text-muted">₱10 per level, up to 10. Posts on the 1st. Line size {wallet?.teamSize ?? 0}.</p>
+            <p className="mt-1 text-xs text-muted">{peso(LEVEL_BONUS)} per level, up to 10. Posts on the 1st. Line size {wallet?.teamSize ?? 0}.</p>
             <dl className="mt-3 grid grid-cols-2 gap-2">
               <div className="rounded-2xl bg-surface p-3">
                 <dt className="text-xs text-muted">Direct paid</dt>
@@ -149,7 +150,7 @@ function ProfilePage() {
                 ))}
               </ul>
             ) : (
-              <p className="mt-3 text-sm text-muted">No unilevel yet. Place a recruit to schedule ₱10.</p>
+              <p className="mt-3 text-sm text-muted">No unilevel yet. Place a recruit to schedule {peso(LEVEL_BONUS)}.</p>
             )}
           </section>
           <section className="mt-3 rounded-3xl border border-line bg-raise p-4">
@@ -272,7 +273,7 @@ function ProfilePage() {
                   .then((next) => {
                     setNetwork(next);
                     setRecruitUid("");
-                    toast("Placed. ₱10 is scheduled up to ten levels.");
+                    toast(`Placed. ${peso(LEVEL_BONUS)} is scheduled up to ten levels.`);
                   })
                   .catch((caught) => setError(errorText(caught)))
                   .finally(() => setPending(false));

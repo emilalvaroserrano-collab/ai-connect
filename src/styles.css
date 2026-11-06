@@ -110,6 +110,7 @@
   a, button, input, select, textarea {
     transition: none;
   }
+  .start-bg { animation: none; }
 }
 
 .app-frame {
@@ -137,4 +138,19 @@
   background: color-mix(in oklab, var(--color-raise) 86%, transparent);
   box-shadow: var(--shadow-float);
   backdrop-filter: blur(18px);
+}
+
+@keyframes gold-drift {
+  0% { background-position: 0% 40%; }
+  50% { background-position: 100% 60%; }
+  100% { background-position: 0% 40%; }
+}
+
+.start-bg {
+  background:
+    radial-gradient(520px 320px at 15% 10%, rgba(212, 175, 55, 0.35), transparent 60%),
+    radial-gradient(480px 360px at 90% 80%, rgba(90, 90, 90, 0.45), transparent 55%),
+    linear-gradient(125deg, #0e0e0e, #1c160c, #3d3114, #161616, #2a2418, #0e0e0e);
+  background-size: 140% 140%, 140% 140%, 280% 280%;
+  animation: gold-drift 16s ease-in-out infinite;
 }

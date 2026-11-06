@@ -10,8 +10,15 @@ export const firebaseConfig = {
   measurementId: "G-F8G60GBV0S",
 } as const;
 
-export const MEMBERSHIP_FEE = 550;
-export const DIRECT_BONUS = 50;
-export const LEVEL_BONUS = 10;
+/** 6 Nov 2026 spot, about ₱63 per $1. */
+export const PHP_PER_USD = 63;
+
+export function phpToUsd(php: number) {
+  return Math.round((php * 100) / PHP_PER_USD) / 100;
+}
+
+export const MEMBERSHIP_FEE = phpToUsd(550);
+export const DIRECT_BONUS = phpToUsd(50);
+export const LEVEL_BONUS = phpToUsd(10);
 export const LEVELS = 10;
-export const PAYOUT_MIN = 100;
+export const PAYOUT_MIN = phpToUsd(100);

@@ -1,3 +1,5 @@
+import { phpToUsd } from "@/lib/firebase-config";
+
 export type StudioProduct = {
   code: string;
   merchantId: string;
@@ -16,7 +18,7 @@ export const PRODUCT_CATALOG: StudioProduct[] = [
     merchantId: "harbor-goods",
     name: "Wick brass lamp",
     description: "A small brass desk lamp for early-morning tutorials.",
-    price: 1890,
+    price: phpToUsd(1890),
     image: "/covers/product.jpg",
     commissionBps: 1200,
     windowDays: 14,
@@ -27,7 +29,7 @@ export const PRODUCT_CATALOG: StudioProduct[] = [
     merchantId: "harbor-goods",
     name: "Carbon copy notebook",
     description: "A5 notebook with a perforated second sheet.",
-    price: 420,
+    price: phpToUsd(420),
     image: "/covers/projects.jpg",
     commissionBps: 1500,
     windowDays: 7,
@@ -38,7 +40,7 @@ export const PRODUCT_CATALOG: StudioProduct[] = [
     merchantId: "northline",
     name: "Northline headset",
     description: "Closed headset for lesson audio and live selling.",
-    price: 2450,
+    price: phpToUsd(2450),
     image: "/covers/voice.jpg",
     commissionBps: 800,
     windowDays: 14,
@@ -49,7 +51,7 @@ export const PRODUCT_CATALOG: StudioProduct[] = [
     merchantId: "daily-connect",
     name: "Morning kit",
     description: "Printed prompt cards that pair with the daily tutorial.",
-    price: 650,
+    price: phpToUsd(650),
     image: "/covers/rag.jpg",
     commissionBps: 2000,
     windowDays: 30,

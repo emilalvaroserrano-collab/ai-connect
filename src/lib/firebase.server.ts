@@ -12,7 +12,7 @@ import {
   MEMBERSHIP_FEE,
   PAYOUT_MIN,
 } from "@/lib/firebase-config";
-import { dayIndex, manilaPeriod } from "@/lib/manila";
+import { dayIndex, manilaPeriod, peso } from "@/lib/manila";
 import type {
   CatalogTutorial,
 } from "@/lib/catalog";
@@ -887,7 +887,7 @@ export async function activateMembership(idToken: string) {
       });
       await rput(`/notifications/${profile.sponsorId}/ref_${profile.uid}`, {
         kind: "referral",
-        title: "₱50 referral",
+        title: `${peso(DIRECT_BONUS)} referral`,
         body: `${profile.name} joined with your link.`,
         read: false,
         createdAt: now,
@@ -1042,7 +1042,7 @@ export async function requestPayout(
 ) {
   const profile = await requireUser(idToken);
   if (profile.membershipStatus !== "active") throw new Error("Activate membership before requesting a payout.");
-  if (input.amount < PAYOUT_MIN) throw new Error(`Minimum payout is ₱${PAYOUT_MIN}.`);
+  if (input.amount < PAYOUT_MIN) throw new Error(`Minimum payout is ${peso(PAYOUT_MIN)}.`);
   const payoutMethod = cleanPayoutAccount(input);
   await settle(profile.uid);
   const fresh = (await rget<UserRec>(`/users/${profile.uid}`)) ?? profile;
@@ -1083,7 +1083,7 @@ export async function requestPayout(
   await rput(`/notifications/${profile.uid}/${requestId}`, {
     kind: "payout",
     title: "Payout requested",
-    body: `₱${input.amount} is waiting for the admin to pay it. Your balance is unchanged.`,
+    body: `$${input.amount} is waiting for the admin to pay it. Your balance is unchanged.`,
     read: false,
     createdAt: now,
   });
@@ -1118,7 +1118,7 @@ export async function markPayoutPaid(idToken: string, requestId: string) {
   await rput(`/notifications/${request.uid}/${requestId}_paid`, {
     kind: "payout",
     title: "Payout paid",
-    body: `₱${request.amount} was paid to your ${request.method === "gcash" ? "GCash" : "Maya"} account.`,
+    body: `$${request.amount} was paid to your ${request.method === "gcash" ? "GCash" : "Maya"} account.`,
     read: false,
     createdAt: paidAt,
   });
@@ -1225,7 +1225,7 @@ export async function placeMember(input: { idToken: string; recruitUid: string; 
       });
       await rput(`/notifications/${ancestorId}/uni_${input.recruitUid}`, {
         kind: "unilevel",
-        title: "₱10 unilevel scheduled",
+        title: `${peso(LEVEL_BONUS)} unilevel scheduled`,
         body: `${recruit.name} was placed at level ${level}. It posts on the 1st.`,
         read: false,
         createdAt: now,

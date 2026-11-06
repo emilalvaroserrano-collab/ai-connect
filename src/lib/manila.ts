@@ -41,10 +41,11 @@ export function formatClock(totalSeconds: number) {
 }
 
 export function peso(amount: number) {
-  return new Intl.NumberFormat("en-PH", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "PHP",
-    maximumFractionDigits: 0,
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 

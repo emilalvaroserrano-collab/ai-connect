@@ -117,7 +117,7 @@ export function ModerateView({ session }: { session: Session }) {
               event: eventName,
             },
           })
-            .then((result) => setNote(`Order ${result.action}. Member amount ₱${result.member}.`))
+            .then((result) => setNote(`Order ${result.action}. Member amount $${result.member}.`))
             .catch((caught) => setNote(errorText(caught)));
         }}
       >
@@ -158,7 +158,7 @@ export function ModerateView({ session }: { session: Session }) {
               status: earningStatus,
             },
           })
-            .then((result) => setNote(result.applied ? `${result.status} share ₱${result.share}.` : "That report id was already recorded."))
+            .then((result) => setNote(result.applied ? `${result.status} share $${result.share}.` : "That report id was already recorded."))
             .catch((caught) => setNote(errorText(caught)));
         }}
       >
@@ -171,7 +171,7 @@ export function ModerateView({ session }: { session: Session }) {
             </option>
           ))}
         </select>
-        <input type="number" min={0} value={gross} onChange={(event) => setGross(Number(event.target.value))} className="h-11 rounded-xl border border-line bg-raise px-3" aria-label="Gross pesos" />
+        <input type="number" min={0} value={gross} onChange={(event) => setGross(Number(event.target.value))} className="h-11 rounded-xl border border-line bg-raise px-3" aria-label="Gross dollars" />
         <input type="number" min={0} value={deductions} onChange={(event) => setDeductions(Number(event.target.value))} className="h-11 rounded-xl border border-line bg-raise px-3" aria-label="Deductions" />
         <select value={earningStatus} onChange={(event) => setEarningStatus(event.target.value as "estimated" | "confirmed")} className="h-11 rounded-xl border border-line bg-raise px-3">
           <option value="estimated">estimated</option>

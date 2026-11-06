@@ -12,7 +12,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" },
       { title: "AI Master Plan" },
-      { name: "description", content: "One AI tool, taught every morning. ₱550 once." },
+      { name: "description", content: "One AI tool, taught every morning. $8.73 once." },
       { name: "theme-color", content: "#141414" },
     ],
     links: [

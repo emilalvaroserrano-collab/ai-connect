@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Shell, Splash } from "@/components/shell";
 import { getWallet, payout } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
-import { PAYOUT_MIN } from "@/lib/firebase-config";
+import { DIRECT_BONUS, LEVEL_BONUS, PAYOUT_MIN } from "@/lib/firebase-config";
 import { errorText, peso } from "@/lib/manila";
 import type { WalletView } from "@/lib/types";
 
@@ -91,7 +91,7 @@ function WalletPage() {
               ))}
             </dl>
             <p className="mt-3 text-sm text-muted">
-              ₱50 from a direct join is available immediately. ₱10 unilevel posts on the 1st (Manila). Line size: {view.teamSize}.
+              {peso(DIRECT_BONUS)} from a direct join is available immediately. {peso(LEVEL_BONUS)} unilevel posts on the 1st (Manila). Line size: {view.teamSize}.
             </p>
             <form
               className="mt-8 space-y-3"
@@ -169,7 +169,7 @@ function WalletPage() {
             {note ? <p className="mt-3 text-sm text-muted">{note}</p> : null}
             <h2 className="mt-10 font-display text-2xl">History</h2>
             {view.transactions.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">Share your link. ₱50 lands the moment they join.</p>
+              <p className="mt-2 text-sm text-muted">Share your link. {peso(DIRECT_BONUS)} lands the moment they join.</p>
             ) : (
               <ul className="mt-4 divide-y divide-line">
                 {view.transactions.map((tx) => (
