@@ -1,6 +1,6 @@
 export const VAPI_PUBLIC_KEY = "6eaf3127-52c3-485c-8008-63b58883f872";
 
-const DEFAULT_PROMPT = `[Identity]
+export const DEFAULT_PROMPT = `[Identity]
 You are Mike, a customer service voice assistant for TechSolutions. Your primary purpose is to help customers resolve issues with their products, answer questions about services, and ensure every support interaction is positive and satisfying.
 
 [Style]
@@ -53,6 +53,16 @@ You are Mike, a customer service voice assistant for TechSolutions. Your primary
 - Never access or view customer passwords.
 - During support hours (Monday–Friday, 8am–8pm ET; Saturday 9am–5pm), confirm availability for advanced support requests or escalations.`;
 
+export const DEFAULT_NAME = "Mike";
+export const DEFAULT_FIRST =
+  "Hi there, this is Mike from TechSolutions customer support. How can I help you today?";
+export const DEFAULT_VOICEMAIL =
+  "Hello, this is Alex from TechSolutions customer support. I'm sorry we missed your call. Please call us back so we can help resolve your issue.";
+export const DEFAULT_END =
+  "Thank you for choosing TechSolutions. I'm glad I could help you today. Have a great day!";
+export const DEFAULT_VOICE_ID = "Elliot";
+export const VOICES = ["Elliot", "Cole", "Harry", "Spencer", "Neha", "Lily", "Savannah", "Paige", "Hana", "Rohan", "Kylie"] as const;
+
 export const DEFAULT_ASSISTANT_ID = "88f31830-5fa4-474f-b8ed-63e8406505bc";
 
 export type PersonaInput = {
@@ -63,19 +73,27 @@ export type PersonaInput = {
   hours: string;
   languages: string;
   refund: string;
+  firstMessage?: string;
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  voiceId?: string;
+  systemPrompt?: string;
 };
 
 export function personalizeAssistant(input: PersonaInput) {
   const persona = input.persona.trim() || "Mike";
   const business = input.business.trim() || "TechSolutions";
   const hours = input.hours.trim() || "Monday–Friday, 8am–8pm ET; Saturday 9am–5pm";
-  const prompt = DEFAULT_PROMPT.replaceAll("TechSolutions", business)
-    .replaceAll("Mike", persona)
-    .replace(
-      "During support hours (Monday–Friday, 8am–8pm ET; Saturday 9am–5pm), confirm availability for advanced support requests or escalations.",
-      `During support hours (${hours}), confirm availability for advanced support requests or escalations.`,
-    )
-    .concat(`
+  const voiceId = VOICES.includes(input.voiceId as (typeof VOICES)[number]) ? input.voiceId! : DEFAULT_VOICE_ID;
+  const prompt = input.systemPrompt?.trim()
+    ? input.systemPrompt.trim()
+    : DEFAULT_PROMPT.replaceAll("TechSolutions", business)
+        .replaceAll("Mike", persona)
+        .replace(
+          "During support hours (Monday–Friday, 8am–8pm ET; Saturday 9am–5pm), confirm availability for advanced support requests or escalations.",
+          `During support hours (${hours}), confirm availability for advanced support requests or escalations.`,
+        )
+        .concat(`
 
 [This business]
 - Persona name: ${persona}.
@@ -87,16 +105,16 @@ export function personalizeAssistant(input: PersonaInput) {
 - Only use facts in this prompt. If a fact is missing, say you will check and offer the handoff.`);
 
   return {
-    name: `${persona} · ${business}`.slice(0, 40),
-    voice: { version: "2", voiceId: "Elliot", provider: "vapi" },
+    name: persona.slice(0, 40),
+    voice: { version: "2", voiceId, provider: "vapi" },
     model: {
       model: "claude-sonnet-4-6",
       provider: "anthropic",
       messages: [{ role: "system", content: prompt }],
     },
-    firstMessage: `Hi there, this is ${persona} from ${business} customer support. How can I help you today?`,
-    voicemailMessage: `Hello, this is ${persona} from ${business} customer support. I'm sorry we missed your call. Please call us back so we can help resolve your issue.`,
-    endCallMessage: `Thank you for choosing ${business}. I'm glad I could help you today. Have a great day!`,
+    firstMessage: input.firstMessage?.trim() || DEFAULT_FIRST,
+    voicemailMessage: input.voicemailMessage?.trim() || DEFAULT_VOICEMAIL,
+    endCallMessage: input.endCallMessage?.trim() || DEFAULT_END,
     transcriber: {
       model: "stt-rt-v5",
       language: "en",

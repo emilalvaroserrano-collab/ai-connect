@@ -50,6 +50,20 @@ export function peso(amount: number) {
 }
 
 export function errorText(error: unknown) {
-  if (error instanceof Error && error.message) return error.message.replace(/^Error:\s*/, "");
-  return "Something went wrong.";
+  const raw = error instanceof Error && error.message ? error.message.replace(/^Error:\s*/, "") : "";
+  if (raw.startsWith("[")) {
+    try {
+      const issues = JSON.parse(raw) as { path?: (string | number)[]; message?: string }[];
+      const first = Array.isArray(issues) ? issues[0] : undefined;
+      const field = first?.path?.[first.path.length - 1];
+      if (field === "persona") return "Add a persona name.";
+      if (field === "business") return "Add the business name.";
+      if (field === "offer") return "Say what the business does.";
+      if (field === "contact") return "Add a phone or email.";
+      if (typeof first?.message === "string") return first.message;
+    } catch {
+      /* show the original text */
+    }
+  }
+  return raw || "Something went wrong.";
 }

@@ -22,6 +22,9 @@ export type CsrAgent = {
   plan: CsrPlan;
   price: string;
   firstMessage: string;
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  voiceId?: string;
   vapiAssistantId: string;
   createdAt: number;
   updatedAt: number;
@@ -82,6 +85,9 @@ function publicAgent(agent: CsrAgent) {
     plan: agent.plan,
     price: agent.price,
     firstMessage: agent.firstMessage,
+    voicemailMessage: agent.voicemailMessage || "",
+    endCallMessage: agent.endCallMessage || "",
+    voiceId: agent.voiceId || "Elliot",
     vapiAssistantId: agent.vapiAssistantId || "",
     publicKey: VAPI_PUBLIC_KEY,
     path: `/${agent.uid}/csr/${agent.slug}`,
@@ -108,6 +114,11 @@ export async function saveCsr(input: {
   hours: string;
   languages: string;
   refund: string;
+  firstMessage?: string;
+  voicemailMessage?: string;
+  endCallMessage?: string;
+  voiceId?: string;
+  systemPrompt?: string;
   plan: CsrPlan;
   price: string;
 }) {
@@ -117,17 +128,19 @@ export async function saveCsr(input: {
   const offer = input.offer.trim().slice(0, 400);
   const contact = input.contact.trim().slice(0, 120);
   if (!persona) throw new Error("Name the persona. Mike is only the default.");
-  if (!business) throw new Error("Add the business name.");
-  if (!offer) throw new Error("Say what the business sells or does.");
-  if (!contact) throw new Error("Add a phone or email the agent can hand over.");
   const facts: PersonaInput = {
     persona,
-    business,
+    business: business || "TechSolutions",
     offer,
     contact,
     hours: input.hours.trim().slice(0, 80),
     languages: input.languages.trim().slice(0, 80) || "English",
     refund: input.refund.trim().slice(0, 240),
+    firstMessage: input.firstMessage,
+    voicemailMessage: input.voicemailMessage,
+    endCallMessage: input.endCallMessage,
+    voiceId: input.voiceId,
+    systemPrompt: input.systemPrompt,
   };
   const vapi = await createVapiAssistant(facts);
   const id = `agt${crypto.randomUUID().replace(/-/g, "").slice(0, 8)}`;
@@ -149,6 +162,9 @@ export async function saveCsr(input: {
     plan: input.plan,
     price: input.price.trim().slice(0, 40),
     firstMessage: vapi.firstMessage,
+    voicemailMessage: input.voicemailMessage?.trim() || "",
+    endCallMessage: input.endCallMessage?.trim() || "",
+    voiceId: input.voiceId || "Elliot",
     vapiAssistantId: vapi.id,
     createdAt: now,
     updatedAt: now,
