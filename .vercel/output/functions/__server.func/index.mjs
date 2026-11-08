@@ -12,9 +12,12 @@ var install_page_default = "<!DOCTYPE html>\n<html lang=\"en\" class=\"device-de
 //#endregion
 //#region \0virtual:grok-og-identity
 var grokOgIdentity = { "site": {
-	"title": "Daily Connect",
+	"title": "AI Master Plan",
+	"description": "A step-by-step learning platform to master AI, from fundamentals to real-world applications.",
 	"card": "custom",
-	"image": "/og.jpg"
+	"image": "/og.jpg",
+	"banner": "/x-banner.jpg",
+	"color": "#d4af37"
 } };
 //#endregion
 //#region scripts/grok-pwa-shared.mjs

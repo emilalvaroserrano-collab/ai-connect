@@ -1,5 +1,5 @@
-import { a as manilaPeriod, r as firebaseConfig, t as dayIndex } from "./manila-ST5161Lc.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/firebase.server-VAXKKyTJ.js
+import { a as PAYOUT_MIN, c as firebaseConfig, d as manilaPeriod, f as peso, i as MEMBERSHIP_FEE, n as LEVEL_BONUS, o as dayIndex, t as DIRECT_BONUS, u as isMasterEmail } from "./manila-BaDjFwMm.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/firebase.server-BC4SNhK7.js
 var lesson = (chapters, exercises) => ({
 	chapters,
 	exercises
@@ -630,16 +630,12 @@ async function loadMySponsor(idToken) {
 	if (!sponsor) return null;
 	return publicSponsorCard(sponsor);
 }
-async function isAdmin(uid) {
-	return Boolean(await rget(`/moderators/${uid}`));
-}
 async function publicSponsorCard(sponsor) {
-	const admin = await isAdmin(sponsor.uid);
 	return {
 		name: sponsor.name,
-		phone: admin ? "" : sponsor.phone || "",
-		facebook: admin ? "" : sponsor.facebook || "",
-		whatsapp: admin ? "" : sponsor.whatsapp || ""
+		phone: sponsor.phone || "",
+		facebook: sponsor.facebook || "",
+		whatsapp: sponsor.whatsapp || ""
 	};
 }
 function cleanFacebook(raw) {
@@ -851,32 +847,78 @@ async function mintCode(uid, name) {
 	}
 	throw new Error("Could not mint a referral code. Try again.");
 }
-async function issueActivationCode(idToken, memberCode) {
-	const admin = await requireMember(idToken);
-	if (!await isAdmin(admin.uid)) throw new Error("Only the admin can sell activation codes.");
-	const clean = memberCode.trim().toUpperCase();
-	if (!/^[A-Z0-9]{4,12}$/.test(clean)) throw new Error("Enter the sponsor’s member code.");
-	const sponsorId = await rget(`/referralCodes/${clean}`);
-	if (!sponsorId || !uidOk(sponsorId)) throw new Error("No member has that code.");
-	const sponsor = await rget(`/users/${sponsorId}`);
-	if (!sponsor || sponsor.membershipStatus !== "active") throw new Error("That member is not active.");
+async function readUploadedVideo(id) {
+	if (!/^v[a-z0-9]+$/i.test(id)) return null;
+	const row = await rget(`/mediaFiles/${id}`);
+	if (!row?.data) return null;
+	return {
+		mime: row.mime || "video/mp4",
+		data: row.data
+	};
+}
+async function masterAccess(idToken) {
+	const who = await verify(idToken);
+	return {
+		email: who.email,
+		allowed: isMasterEmail(who.email)
+	};
+}
+async function saveActivationCode(record) {
+	await rput(`/activationCodes/${record.code}`, record);
+	await rput(`/activationCodeList/${record.code}`, record);
+}
+function asCodeRecord(code, raw) {
+	const usedByUid = raw.usedByUid || raw.redeemedBy || null;
+	const usedAt = raw.usedAt || raw.redeemedAt || null;
+	return {
+		code,
+		status: raw.status === "used" || usedByUid ? "used" : "available",
+		createdAt: raw.createdAt ?? 0,
+		createdByUid: raw.createdByUid || raw.issuedBy || "",
+		createdByEmail: raw.createdByEmail || "",
+		createdByName: raw.createdByName || "",
+		createdWhere: raw.createdWhere || "",
+		sponsorId: raw.sponsorId || "",
+		sponsorCode: raw.sponsorCode || "",
+		sponsorName: raw.sponsorName || "",
+		usedAt,
+		usedByUid,
+		usedByName: raw.usedByName || null,
+		usedByEmail: raw.usedByEmail || null,
+		issuedBy: raw.issuedBy || raw.createdByUid || "",
+		redeemedBy: usedByUid,
+		redeemedAt: usedAt
+	};
+}
+async function issueActivationCode(idToken) {
+	const who = await verify(idToken);
+	if (!isMasterEmail(who.email)) throw new Error("Only master@dailyconnect.tech can create activation codes.");
 	const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 	for (let attempt = 0; attempt < 6; attempt += 1) {
 		const bytes = crypto.getRandomValues(/* @__PURE__ */ new Uint8Array(8));
 		let code = "";
 		for (const byte of bytes) code += alphabet[byte % 32];
 		if (await rget(`/activationCodes/${code}`)) continue;
-		await rput(`/activationCodes/${code}`, {
-			issuedBy: admin.uid,
-			sponsorId,
-			createdAt: Date.now(),
-			redeemedBy: null
-		});
-		await rput(`/codesBySponsor/${sponsorId}/${code}`, true);
-		return {
+		await saveActivationCode({
 			code,
-			sponsorName: sponsor.name
-		};
+			status: "available",
+			createdAt: Date.now(),
+			createdByUid: who.uid,
+			createdByEmail: who.email,
+			createdByName: who.name || "master@dailyconnect.tech",
+			createdWhere: "/code/create",
+			sponsorId: "",
+			sponsorCode: "",
+			sponsorName: "",
+			usedAt: null,
+			usedByUid: null,
+			usedByName: null,
+			usedByEmail: null,
+			issuedBy: who.uid,
+			redeemedBy: null,
+			redeemedAt: null
+		});
+		return { code };
 	}
 	throw new Error("Could not issue a code. Try again.");
 }
@@ -889,36 +931,72 @@ async function listSponsorCodes(idToken) {
 	}
 	return { codes };
 }
+async function listIssuedCodes(idToken) {
+	const who = await verify(idToken);
+	if (!isMasterEmail(who.email)) throw new Error("Only master@dailyconnect.tech can view activation codes.");
+	const raw = await rget("/activationCodes");
+	const codes = [];
+	for (const [code, row] of Object.entries(raw ?? {})) {
+		const record = asCodeRecord(code, row ?? {});
+		if (record.createdByUid && !record.createdByEmail) {
+			const creator = await rget(`/users/${record.createdByUid}`);
+			if (creator) {
+				record.createdByEmail = creator.email || "";
+				record.createdByName = record.createdByName || creator.name;
+			}
+		}
+		if (record.sponsorId && !record.sponsorName) {
+			const sponsor = await rget(`/users/${record.sponsorId}`);
+			if (sponsor) record.sponsorName = sponsor.name;
+		}
+		if (record.usedByUid && !record.usedByName) {
+			const member = await rget(`/users/${record.usedByUid}`);
+			if (member) {
+				record.usedByName = member.name;
+				record.usedByEmail = member.email;
+			}
+		}
+		await rput(`/activationCodeList/${code}`, record);
+		codes.push(record);
+	}
+	codes.sort((a, b) => b.createdAt - a.createdAt);
+	return { codes };
+}
 async function redeemActivationCode(input) {
 	const profile = await requireUser(input.idToken);
 	if (profile.membershipStatus === "active") return profile;
 	const code = input.code.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
-	if (!/^[A-Z0-9]{8}$/.test(code)) throw new Error("Enter the 8-character code from your sponsor.");
-	const row = await rget(`/activationCodes/${code}`);
-	if (!row?.sponsorId) throw new Error("That activation code is not valid.");
-	const sponsorId = row.sponsorId;
-	if (row.redeemedBy) throw new Error("That activation code was already used.");
-	if (profile.sponsorId && profile.sponsorId !== sponsorId) throw new Error("Buy the code from the sponsor on your link.");
-	const sponsor = await rget(`/users/${sponsorId}`);
-	if (!sponsor || sponsor.membershipStatus !== "active") throw new Error("That sponsor is not active.");
-	if (!profile.sponsorId) {
-		await updateUser(profile.uid, (user) => ({
-			...user,
-			sponsorId
-		}));
-		await rput(`/bySponsor/${sponsorId}/${profile.uid}`, {
-			name: profile.name,
-			membershipStatus: "inactive",
-			placed: false
-		});
-	}
+	if (!/^[A-Z0-9]{8}$/.test(code)) throw new Error("Enter the activation code.");
+	const stored = await rget(`/activationCodes/${code}`);
+	if (!stored || !stored.issuedBy && !stored.createdByUid && !stored.createdAt) throw new Error("That activation code is not valid.");
+	const record = asCodeRecord(code, stored);
+	if (record.status === "used" || record.redeemedBy) throw new Error("That activation code was already used.");
 	const next = await activateMembership(input.idToken);
-	await rput(`/activationCodes/${code}`, {
-		...row,
+	const usedAt = Date.now();
+	let sponsorId = record.sponsorId;
+	let sponsorName = record.sponsorName;
+	let sponsorCode = record.sponsorCode;
+	const linkedSponsor = profile.sponsorId;
+	if (!sponsorId && linkedSponsor) {
+		const sponsor = await rget(`/users/${linkedSponsor}`);
+		sponsorId = linkedSponsor;
+		sponsorName = sponsor?.name ?? "";
+		sponsorCode = sponsor?.referralCode ?? "";
+	}
+	await saveActivationCode({
+		...record,
+		sponsorId,
+		sponsorName,
+		sponsorCode,
+		status: "used",
+		usedAt,
+		usedByUid: profile.uid,
+		usedByName: profile.name,
+		usedByEmail: profile.email,
 		redeemedBy: profile.uid,
-		redeemedAt: Date.now()
+		redeemedAt: usedAt
 	});
-	if (row.sponsorId) await rput(`/codesBySponsor/${row.sponsorId}/${code}`, null);
+	if (record.sponsorId) await rput(`/codesBySponsor/${record.sponsorId}/${code}`, null);
 	return next;
 }
 async function activateMembership(idToken) {
@@ -930,7 +1008,7 @@ async function activateMembership(idToken) {
 		if (!await rget(`/referrals/${profile.uid}`)) {
 			await updateUser(profile.sponsorId, (sponsor) => ({
 				...sponsor,
-				walletBalance: sponsor.walletBalance + 50
+				walletBalance: sponsor.walletBalance + DIRECT_BONUS
 			}));
 			await rput(`/referrals/${profile.uid}`, {
 				referrerId: profile.sponsorId,
@@ -942,7 +1020,7 @@ async function activateMembership(idToken) {
 			await rput(`/walletTransactions/${profile.sponsorId}/ref_${profile.uid}`, {
 				userId: profile.sponsorId,
 				type: "referral_bonus",
-				amount: 50,
+				amount: DIRECT_BONUS,
 				status: "posted",
 				period: manilaPeriod(),
 				note: `${profile.name} joined`,
@@ -951,7 +1029,7 @@ async function activateMembership(idToken) {
 			});
 			await rput(`/notifications/${profile.sponsorId}/ref_${profile.uid}`, {
 				kind: "referral",
-				title: "₱50 referral",
+				title: `${peso(DIRECT_BONUS)} referral`,
 				body: `${profile.name} joined with your link.`,
 				read: false,
 				createdAt: now
@@ -973,7 +1051,7 @@ async function activateMembership(idToken) {
 	});
 	await rput(`/payments/${profile.uid}/${now}`, {
 		userId: profile.uid,
-		amount: 550,
+		amount: MEMBERSHIP_FEE,
 		status: "recorded",
 		gateway: "sponsor",
 		gatewayRef: `sponsor_${now.toString(36)}`,
@@ -1037,6 +1115,8 @@ async function loadWallet(idToken) {
 	const recruits = await rget(`/bySponsor/${profile.uid}`);
 	const list = Object.values(recruits ?? {});
 	const accruing = transactions.filter((tx) => tx.type === "unilevel" && tx.status === "scheduled").reduce((sum, tx) => sum + tx.amount, 0);
+	const accumulated = transactions.filter((tx) => tx.type !== "payout" && tx.status !== "scheduled" && tx.amount > 0).reduce((sum, tx) => sum + tx.amount, 0);
+	const pendingPayout = transactions.filter((tx) => tx.type === "payout" && tx.status === "requested").reduce((sum, tx) => sum + tx.amount, 0);
 	return {
 		profile: fresh,
 		transactions,
@@ -1044,7 +1124,10 @@ async function loadWallet(idToken) {
 		directPending: list.filter((recruit) => recruit.membershipStatus !== "active").length,
 		directBonus: transactions.filter((tx) => tx.type === "referral_bonus").reduce((sum, tx) => sum + tx.amount, 0),
 		accruing,
-		teamSize: await teamSize(profile.uid)
+		teamSize: await teamSize(profile.uid),
+		accumulated,
+		available: Math.max(0, Number(fresh.walletBalance) - pendingPayout),
+		pendingPayout
 	};
 }
 async function teamSize(uid) {
@@ -1059,36 +1142,114 @@ async function teamSize(uid) {
 	}
 	return Math.max(0, seen.size - 1);
 }
-async function requestPayout(idToken, amount) {
+function cleanPayoutAccount(input) {
+	const accountName = input.accountName.trim().replace(/\s+/g, " ");
+	if (accountName.length < 2) throw new Error("Enter the account name.");
+	if (input.method === "gcash") {
+		const account = input.account.replace(/\D/g, "");
+		if (account.length < 10 || account.length > 16) throw new Error("Enter the GCash account number.");
+		return {
+			method: input.method,
+			account,
+			phone: account,
+			accountName
+		};
+	}
+	const account = input.account.replace(/\D/g, "");
+	if (account.length < 10 || account.length > 16) throw new Error("Enter the Maya account number.");
+	return {
+		method: input.method,
+		account,
+		phone: account,
+		accountName
+	};
+}
+async function requestPayout(idToken, input) {
 	const profile = await requireUser(idToken);
 	if (profile.membershipStatus !== "active") throw new Error("Activate membership before requesting a payout.");
-	if (amount < 100) throw new Error(`Minimum payout is ₱100.`);
-	const next = await updateUser(profile.uid, (user) => {
-		if (user.walletBalance < amount) throw new Error("That is more than your available balance.");
-		return {
-			...user,
-			walletBalance: user.walletBalance - amount
-		};
-	});
+	if (input.amount < PAYOUT_MIN) throw new Error(`Minimum payout is ${peso(PAYOUT_MIN)}.`);
+	const payoutMethod = cleanPayoutAccount(input);
+	await settle(profile.uid);
+	const fresh = await rget(`/users/${profile.uid}`) ?? profile;
+	const txRaw = await rget(`/walletTransactions/${profile.uid}`);
+	const pending = Object.values(txRaw ?? {}).filter((tx) => tx?.type === "payout" && tx.status === "requested").reduce((sum, tx) => sum + Number(tx.amount), 0);
+	if (Number(fresh.walletBalance) - pending < input.amount) throw new Error("That is more than your available balance.");
+	const next = await updateUser(profile.uid, (user) => ({
+		...user,
+		payoutMethod
+	}));
 	const now = Date.now();
-	await rput(`/walletTransactions/${profile.uid}/payout_${now}`, {
+	const requestId = `payout_${now}`;
+	await rput(`/walletTransactions/${profile.uid}/${requestId}`, {
 		userId: profile.uid,
 		type: "payout",
-		amount,
+		amount: input.amount,
 		status: "requested",
 		period: manilaPeriod(),
-		note: "Payout requested",
+		note: `${payoutMethod.method === "gcash" ? "GCash" : "Maya"} payout requested. Not paid yet.`,
 		sourceUserId: null,
 		createdAt: now
 	});
-	await rput(`/notifications/${profile.uid}/payout_${now}`, {
+	await rput(`/payoutRequests/${requestId}`, {
+		id: requestId,
+		uid: profile.uid,
+		name: profile.name,
+		email: profile.email,
+		amount: input.amount,
+		method: payoutMethod.method,
+		account: payoutMethod.account,
+		phone: payoutMethod.phone,
+		accountName: payoutMethod.accountName,
+		status: "requested",
+		createdAt: now,
+		paidAt: null
+	});
+	await rput(`/notifications/${profile.uid}/${requestId}`, {
 		kind: "payout",
 		title: "Payout requested",
-		body: `₱${amount} is marked for the monthly payout.`,
+		body: `$${input.amount} is waiting for the admin to pay it. Your balance is unchanged.`,
 		read: false,
 		createdAt: now
 	});
 	return next;
+}
+async function listPayoutRequests(idToken) {
+	const who = await verify(idToken);
+	if (!isMasterEmail(who.email)) throw new Error("Only master@dailyconnect.tech can open payout requests.");
+	const raw = await rget("/payoutRequests");
+	return { requests: Object.values(raw ?? {}).sort((a, b) => b.createdAt - a.createdAt) };
+}
+async function markPayoutPaid(idToken, requestId) {
+	const who = await verify(idToken);
+	if (!isMasterEmail(who.email)) throw new Error("Only master@dailyconnect.tech can mark a payout paid.");
+	if (!/^payout_\d+$/.test(requestId)) throw new Error("That payout request is not valid.");
+	const request = await rget(`/payoutRequests/${requestId}`);
+	if (!request) throw new Error("That payout request was not found.");
+	if (request.status === "paid") return { requests: (await listPayoutRequests(idToken)).requests };
+	await updateUser(request.uid, (user) => {
+		if (user.walletBalance < request.amount) throw new Error("The balance is lower than this payout.");
+		return {
+			...user,
+			walletBalance: user.walletBalance - request.amount
+		};
+	});
+	const paidAt = Date.now();
+	await rpatch(`/payoutRequests/${requestId}`, {
+		status: "paid",
+		paidAt
+	});
+	await rpatch(`/walletTransactions/${request.uid}/${requestId}`, {
+		status: "paid",
+		note: `${request.method === "gcash" ? "GCash" : "Maya"} payout paid.`
+	});
+	await rput(`/notifications/${request.uid}/${requestId}_paid`, {
+		kind: "payout",
+		title: "Payout paid",
+		body: `$${request.amount} was paid to your ${request.method === "gcash" ? "GCash" : "Maya"} account.`,
+		read: false,
+		createdAt: paidAt
+	});
+	return listPayoutRequests(idToken);
 }
 async function buildTree(uid, depth) {
 	const user = await rget(`/users/${uid}`);
@@ -1166,7 +1327,7 @@ async function placeMember(input) {
 		await rput(`/walletTransactions/${ancestorId}/uni_${input.recruitUid}`, {
 			userId: ancestorId,
 			type: "unilevel",
-			amount: 10,
+			amount: LEVEL_BONUS,
 			status: "scheduled",
 			period,
 			note: `Level ${level} from ${recruit.name}`,
@@ -1175,7 +1336,7 @@ async function placeMember(input) {
 		});
 		await rput(`/notifications/${ancestorId}/uni_${input.recruitUid}`, {
 			kind: "unilevel",
-			title: "₱10 unilevel scheduled",
+			title: `${peso(LEVEL_BONUS)} unilevel scheduled`,
 			body: `${recruit.name} was placed at level ${level}. It posts on the 1st.`,
 			read: false,
 			createdAt: now
@@ -1197,4 +1358,4 @@ async function listNotices(idToken) {
 	};
 }
 //#endregion
-export { ensureProfile, issueActivationCode, listNotices, listSponsorCodes, loadDesk, loadMySponsor, loadNetwork, loadProfile, loadSponsorCard, loadTutorial, loadWallet, markNoticesRead, placeMember, postLedger, redeemActivationCode, refresh, requestPayout, requireActiveMember, saveProgress, savePublicContact, signInWithEmail, signUpWithEmail };
+export { ensureProfile, issueActivationCode, listIssuedCodes, listNotices, listPayoutRequests, listSponsorCodes, loadDesk, loadMySponsor, loadNetwork, loadProfile, loadSponsorCard, loadTutorial, loadWallet, markNoticesRead, markPayoutPaid, masterAccess, placeMember, postLedger, readUploadedVideo, redeemActivationCode, refresh, requestPayout, requireActiveMember, saveProgress, savePublicContact, signInWithEmail, signUpWithEmail };

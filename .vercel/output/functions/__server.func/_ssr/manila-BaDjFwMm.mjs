@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/manila-ST5161Lc.js
+//#region node_modules/.nitro/vite/services/ssr/assets/manila-BaDjFwMm.js
 /** Public Firebase web config (the client key is not a server secret). */
 var firebaseConfig = {
 	apiKey: "AIzaSyC8k-Urv_CEQSuJFSEojh_aU9ur3LijXOA",
@@ -7,8 +7,20 @@ var firebaseConfig = {
 	projectId: "masterplan-1cd65",
 	storageBucket: "masterplan-1cd65.firebasestorage.app",
 	messagingSenderId: "737894267682",
-	appId: "1:737894267682:web:26d96704580c32222d037b"
+	appId: "1:737894267682:web:26d96704580c32222d037b",
+	measurementId: "G-F8G60GBV0S"
 };
+function phpToUsd(php) {
+	return Math.round(php * 100 / 63) / 100;
+}
+var MEMBERSHIP_FEE = phpToUsd(550);
+var DIRECT_BONUS = phpToUsd(50);
+var LEVEL_BONUS = phpToUsd(10);
+var PAYOUT_MIN = phpToUsd(100);
+var MASTER_EMAIL = "master@dailyconnect.tech";
+function isMasterEmail(email) {
+	return (email ?? "").trim().toLowerCase() === MASTER_EMAIL;
+}
 function manilaDate(now = /* @__PURE__ */ new Date()) {
 	return new Intl.DateTimeFormat("en-CA", {
 		timeZone: "Asia/Manila",
@@ -47,15 +59,26 @@ function formatClock(totalSeconds) {
 	].map((n) => String(n).padStart(2, "0")).join(":");
 }
 function peso(amount) {
-	return new Intl.NumberFormat("en-PH", {
+	return new Intl.NumberFormat("en-US", {
 		style: "currency",
-		currency: "PHP",
-		maximumFractionDigits: 0
+		currency: "USD",
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2
 	}).format(amount);
 }
 function errorText(error) {
-	if (error instanceof Error && error.message) return error.message.replace(/^Error:\s*/, "");
-	return "Something went wrong.";
+	const raw = error instanceof Error && error.message ? error.message.replace(/^Error:\s*/, "") : "";
+	if (raw.startsWith("[")) try {
+		const issues = JSON.parse(raw);
+		const first = Array.isArray(issues) ? issues[0] : void 0;
+		const field = first?.path?.[first.path.length - 1];
+		if (field === "persona") return "Add a persona name.";
+		if (field === "business") return "Add the business name.";
+		if (field === "offer") return "Say what the business does.";
+		if (field === "contact") return "Add a phone or email.";
+		if (typeof first?.message === "string") return first.message;
+	} catch {}
+	return raw || "Something went wrong.";
 }
 //#endregion
-export { manilaPeriod as a, formatClock as i, errorText as n, peso as o, firebaseConfig as r, secondsUntilManilaMidnight as s, dayIndex as t };
+export { PAYOUT_MIN as a, firebaseConfig as c, manilaPeriod as d, peso as f, MEMBERSHIP_FEE as i, formatClock as l, secondsUntilManilaMidnight as m, LEVEL_BONUS as n, dayIndex as o, phpToUsd as p, MASTER_EMAIL as r, errorText as s, DIRECT_BONUS as t, isMasterEmail as u };

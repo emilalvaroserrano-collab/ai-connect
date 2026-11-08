@@ -1,11 +1,12 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/catalog-CCc5nSkg.js
+import { p as phpToUsd } from "./manila-BaDjFwMm.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/catalog-CzqFis8i.js
 var PRODUCT_CATALOG = [
 	{
 		code: "lamp",
 		merchantId: "harbor-goods",
 		name: "Wick brass lamp",
 		description: "A small brass desk lamp for early-morning tutorials.",
-		price: 1890,
+		price: phpToUsd(1890),
 		image: "/covers/product.jpg",
 		commissionBps: 1200,
 		windowDays: 14,
@@ -16,7 +17,7 @@ var PRODUCT_CATALOG = [
 		merchantId: "harbor-goods",
 		name: "Carbon copy notebook",
 		description: "A5 notebook with a perforated second sheet.",
-		price: 420,
+		price: phpToUsd(420),
 		image: "/covers/projects.jpg",
 		commissionBps: 1500,
 		windowDays: 7,
@@ -27,7 +28,7 @@ var PRODUCT_CATALOG = [
 		merchantId: "northline",
 		name: "Northline headset",
 		description: "Closed headset for lesson audio and live selling.",
-		price: 2450,
+		price: phpToUsd(2450),
 		image: "/covers/voice.jpg",
 		commissionBps: 800,
 		windowDays: 14,
@@ -38,7 +39,7 @@ var PRODUCT_CATALOG = [
 		merchantId: "daily-connect",
 		name: "Morning kit",
 		description: "Printed prompt cards that pair with the daily tutorial.",
-		price: 650,
+		price: phpToUsd(650),
 		image: "/covers/rag.jpg",
 		commissionBps: 2e3,
 		windowDays: 30,

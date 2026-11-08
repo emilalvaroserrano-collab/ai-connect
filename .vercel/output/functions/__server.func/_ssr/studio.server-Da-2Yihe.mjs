@@ -1,7 +1,7 @@
-import { a as manilaPeriod, r as firebaseConfig } from "./manila-ST5161Lc.mjs";
-import { postLedger, requireActiveMember } from "./firebase.server-VAXKKyTJ.mjs";
-import { n as PRODUCT_CATALOG, r as productByCode, t as DEFAULT_POLICY } from "./catalog-CCc5nSkg.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/studio.server-y64q2ya-.js
+import { c as firebaseConfig, d as manilaPeriod } from "./manila-BaDjFwMm.mjs";
+import { postLedger, requireActiveMember } from "./firebase.server-BC4SNhK7.mjs";
+import { n as PRODUCT_CATALOG, r as productByCode, t as DEFAULT_POLICY } from "./catalog-CzqFis8i.mjs";
+//#region node_modules/.nitro/vite/services/ssr/assets/studio.server-Da-2Yihe.js
 var PLATFORMS = [
 	"tiktok",
 	"youtube",
@@ -19,7 +19,7 @@ function screenCopy(title, caption) {
 }
 function videoIssues(input) {
 	const issues = [];
-	if (input.mime !== "video/mp4" && input.mime !== "video/webm") issues.push("Use an MP4 or WebM file.");
+	if (!input.mime.startsWith("video/")) issues.push("Use a video file.");
 	if (!Number.isFinite(input.durationSec) || input.durationSec < 1 || input.durationSec > 58) issues.push("Video must run between 1 and 58 seconds.");
 	if (input.width < 1 || input.height < 1) issues.push("Could not read the frame size.");
 	else {
@@ -401,9 +401,9 @@ async function generateStudio(input) {
 	const style = input.style.trim().slice(0, 240) || "plain desk, morning light";
 	const path = affiliatePath(profile.referralCode, product.code);
 	if (input.output === "caption" || input.output === "script") {
-		let text = await grokText(input.output === "caption" ? "Write one social caption under 400 characters for Daily Connect, a Philippine learning desk. No income guarantees, no medical claims, no celebrity names. End with: Affiliate link. Daily Connect may earn a commission." : "Write a 90-second live-selling script for one host. Short lines. No income guarantees. Mention the price in pesos and that it is an affiliate link.", `${product.name}. ${product.description}. Price ₱${product.price}. Style: ${style}. ${product.guidelines}`);
+		let text = await grokText(input.output === "caption" ? "Write one social caption under 400 characters for Daily Connect, a Philippine learning desk. No income guarantees, no medical claims, no celebrity names. End with: Affiliate link. Daily Connect may earn a commission." : "Write a 90-second live-selling script for one host. Short lines. No income guarantees. Mention the price in US dollars and that it is an affiliate link.", `${product.name}. ${product.description}. Price $${product.price}. Style: ${style}. ${product.guidelines}`);
 		const source = text ? "grok" : "desk-draft";
-		if (!text) text = input.output === "caption" ? withDisclosure(`${product.name} — ${product.description} ₱${product.price.toLocaleString("en-PH")}.`) : `Open on the product. ${product.name}, ₱${product.price.toLocaleString("en-PH")}. ${product.description} Close with the tracked link and say it is an affiliate link.`;
+		if (!text) text = input.output === "caption" ? withDisclosure(`${product.name} — ${product.description} $${product.price.toLocaleString("en-US")}.`) : `Open on the product. ${product.name}, $${product.price.toLocaleString("en-US")}. ${product.description} Close with the tracked link and say it is an affiliate link.`;
 		const id = nid("draft");
 		const draft = {
 			id,
@@ -804,7 +804,7 @@ async function confirmOrder(input) {
 		orderId: input.orderId,
 		at: now
 	});
-	if (action === "credit") await notify(memberId, `aff_${input.orderId}`, "Affiliate commission", `₱${split.member} from ${product.name}. Merchant confirmed the order.`);
+	if (action === "credit") await notify(memberId, `aff_${input.orderId}`, "Affiliate commission", `$${split.member} from ${product.name}. Merchant confirmed the order.`);
 	return {
 		action,
 		member: split.member
@@ -848,7 +848,7 @@ async function recordRevenue(input) {
 			amount: share.share,
 			note: `50% of net on ${post.title}`
 		});
-		await notify(post.creatorId, `earn_${input.reportId}`, "Creator share confirmed", `₱${share.share} posted to the wallet. Estimated figures were not paid.`);
+		await notify(post.creatorId, `earn_${input.reportId}`, "Creator share confirmed", `$${share.share} posted to the wallet. Estimated figures were not paid.`);
 	}
 	await rput(`/moderationAuditLogs/${nid("audit")}`, {
 		action: `revenue-${input.status}`,
