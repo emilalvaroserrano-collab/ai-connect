@@ -1,4 +1,4 @@
-//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-Fks0Ddfp.js
+//#region node_modules/.nitro/vite/services/ssr/assets/_tanstack-start-manifest_v-B0tPZJFS.js
 var tsrStartManifest = () => ({ routes: { __root__: {
 	filePath: "/workspace/src/routes/__root.tsx",
 	children: [
@@ -27,11 +27,11 @@ var tsrStartManifest = () => ({ routes: { __root__: {
 		"/$userId/csr/$agentSlug",
 		"/r/$memberCode/$productCode"
 	],
-	preloads: ["/assets/index-CgOQEmqb.js"],
+	preloads: ["/assets/index-D2fw-3X4.js"],
 	scripts: [{ attrs: {
 		type: "module",
 		async: !0,
-		src: "/assets/index-CgOQEmqb.js"
+		src: "/assets/index-D2fw-3X4.js"
 	} }]
 } } });
 //#endregion

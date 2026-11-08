@@ -85,3 +85,30 @@
  ╰─────────────────────────────────────────────────────────╯
 
   ➜  Local:   http://127.0.0.1:8081/
+
+> preview
+> node scripts/with-app-env.mjs vite preview
+
+
+ ╭────────── [Build Info] ─────────────╮
+ │                                     │
+ │  - Build Directory: .vercel/output  │
+ │  - Date: 11/8/2026, 2:59:36 PM      │
+ │  - Nitro Version: 3.0.260610-beta   │
+ │  - Nitro Preset: vercel             │
+ │                                     │
+ ╰─────────────────────────────────────╯
+
+
+ ╭─────────────── [Environment Variables] ─────────────────╮
+ │                                                         │
+ │  Loaded variables from .env files (preview mode only).  │
+ │  Set platform environment variables for production:     │
+ │   - CLOUDINARY_API_SECRET                               │
+ │   - CLOUDINARY_URL                                      │
+ │   - VAPI_PRIVATE_KEY                                    │
+ │   - VAPI_PUBLIC_KEY                                     │
+ │                                                         │
+ ╰─────────────────────────────────────────────────────────╯
+
+  ➜  Local:   http://127.0.0.1:8081/

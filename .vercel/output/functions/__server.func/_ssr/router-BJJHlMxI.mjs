@@ -9,7 +9,7 @@ import { A as ChartLine, C as MessageCircle, D as House, E as Image, M as Bot, N
 import { n as toast, t as Toaster } from "../_libs/sonner.mjs";
 import { t as clsx } from "../_libs/clsx.mjs";
 import { t as twMerge } from "../_libs/tailwind-merge.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/router-CBwtU-jf.js
+//#region node_modules/.nitro/vite/services/ssr/assets/router-BJJHlMxI.js
 var import_react = /* @__PURE__ */ __toESM(require_react());
 var import_jsx_runtime = require_jsx_runtime();
 var FALLBACK_MESSAGE = "An unexpected error occurred. Try reloading the page.";
@@ -1530,6 +1530,13 @@ var extra = [
 		exact: false
 	},
 	{
+		to: "/csr",
+		label: "CSR Agent",
+		hint: "Your customer-service persona",
+		icon: Phone,
+		exact: true
+	},
+	{
 		to: "/deck",
 		label: "Deck",
 		hint: "Watch or upload a reel",
@@ -1585,6 +1592,7 @@ function screenTitle(pathname) {
 	if (pathname.startsWith("/learn")) return "Lessons";
 	if (pathname.startsWith("/tools")) return "Tools";
 	if (pathname.startsWith("/roadmap")) return "Roadmap";
+	if (pathname.startsWith("/community")) return "Community";
 	if (pathname.startsWith("/csr") || pathname.includes("/csr/")) return "CSR Agent";
 	if (pathname.startsWith("/deck")) return "Deck";
 	if (pathname.startsWith("/studio")) return "Studio";

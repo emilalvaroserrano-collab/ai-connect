@@ -7,6 +7,7 @@ import {
   Layers,
   LineChart,
   Menu,
+  Phone,
   Radio,
   Route,
   Shield,
@@ -80,6 +81,7 @@ const profileTab = { to: "/profile", label: "Profile", icon: UserRound, exact: f
 
 const extra = [
   { to: "/community", label: "Community", hint: "Member videos", icon: Clapperboard, exact: false },
+  { to: "/csr", label: "CSR Agent", hint: "Your customer-service persona", icon: Phone, exact: true },
   { to: "/deck", label: "Deck", hint: "Watch or upload a reel", icon: Clapperboard, exact: false },
   { to: "/studio", label: "Studio", hint: "Make a post", icon: Sparkles, exact: false },
   { to: "/live", label: "Live", hint: "Schedule a selling stream", icon: Radio, exact: false },
@@ -96,6 +98,7 @@ function screenTitle(pathname: string) {
   if (pathname.startsWith("/learn")) return "Lessons";
   if (pathname.startsWith("/tools")) return "Tools";
   if (pathname.startsWith("/roadmap")) return "Roadmap";
+  if (pathname.startsWith("/community")) return "Community";
   if (pathname.startsWith("/csr") || pathname.includes("/csr/")) return "CSR Agent";
   if (pathname.startsWith("/deck")) return "Deck";
   if (pathname.startsWith("/studio")) return "Studio";

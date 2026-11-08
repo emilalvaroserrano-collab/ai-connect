@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8081/login",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "AI Master Plan",
+      "hasCanvas": false,
+      "bodyTextLen": 17,
+      "bodyTextHash": "6e781cf6aa18a1bd00cf8dcd061fa1cd0dd02fe94d4b97229c1eeed135b29df1",
+      "bodyTextPrefix": "AI AI Master Plan",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/final-login.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "AI Master Plan",
+      "hasCanvas": false,
+      "bodyTextLen": 17,
+      "bodyTextHash": "6e781cf6aa18a1bd00cf8dcd061fa1cd0dd02fe94d4b97229c1eeed135b29df1",
+      "bodyTextPrefix": "AI AI Master Plan",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/final-login-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/final-login.json"
+}
