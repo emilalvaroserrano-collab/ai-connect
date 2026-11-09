@@ -9,6 +9,25 @@ import { useConnect } from "@/lib/connect";
 import { errorText, formatClock, secondsUntilManilaMidnight } from "@/lib/manila";
 import type { Desk } from "@/lib/types";
 
+async function notifyPick() {
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+  const body = "Today’s pick is ready.";
+  try {
+    const registration = await navigator.serviceWorker?.getRegistration();
+    if (registration) {
+      await registration.showNotification("AI Master Plan", { body });
+      return;
+    }
+  } catch {
+    /* fall through to the page toast */
+  }
+  try {
+    new Notification("AI Master Plan", { body });
+  } catch {
+    /* some browsers only allow service-worker notifications */
+  }
+}
+
 function Ring({ value }: { value: number }) {
   const radius = 18;
   const circ = 2 * Math.PI * radius;
@@ -73,9 +92,7 @@ export function Dashboard() {
     const prev = localStorage.getItem(key);
     if (prev && prev !== desk.todayId) {
       toast("A new daily pick is up.");
-      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-        new Notification("Daily Connect", { body: "Today’s pick is ready." });
-      }
+      void notifyPick();
     }
     localStorage.setItem(key, desk.todayId);
   }, [desk?.todayId]);
