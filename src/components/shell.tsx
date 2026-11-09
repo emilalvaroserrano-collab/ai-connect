@@ -211,11 +211,23 @@ export function Shell({ children }: { children: ReactNode }) {
           </button>
           <Link
             to="/profile"
-            className="grid size-11 place-items-center rounded-full bg-surface font-medium text-teal"
+            className="hidden size-11 place-items-center rounded-full bg-surface font-medium text-teal md:grid"
             aria-label="Profile"
           >
             {initial}
           </Link>
+          <button
+            type="button"
+            className={cn("grid size-11 place-items-center rounded-full text-fg md:hidden", more && "text-teal")}
+            aria-label="More"
+            aria-expanded={more}
+            onClick={() => {
+              setOpen(false);
+              setMore((value) => !value);
+            }}
+          >
+            {more ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
         </div>
         {open ? (
           <div className="glass absolute right-4 top-16 hidden w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-3 md:block">
@@ -274,10 +286,20 @@ export function Shell({ children }: { children: ReactNode }) {
       {more ? (
         <button type="button" aria-label="Close menu" className="absolute inset-0 z-30 bg-black/55 md:hidden" onClick={() => setMore(false)} />
       ) : null}
-      {more ? (
-        <div className="absolute inset-x-0 bottom-0 z-40 rounded-t-3xl bg-raise px-2 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-2 shadow-float md:hidden">
-          <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-line" />
-          <p className="px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted">More</p>
+      <aside
+        className={cn(
+          "absolute inset-y-0 left-0 z-40 flex w-[min(20rem,86vw)] flex-col bg-raise shadow-float transition-transform duration-200 md:hidden",
+          more ? "translate-x-0" : "-translate-x-full",
+        )}
+        aria-hidden={!more}
+      >
+        <div className="flex items-center justify-between px-4 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
+          <p className="text-xs font-medium uppercase tracking-wide text-muted">More</p>
+          <button type="button" aria-label="Close" className="grid size-10 place-items-center rounded-full text-fg" onClick={() => setMore(false)}>
+            <X className="size-5" />
+          </button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {extra.map((tab) => (
             <Link
               key={tab.to}
@@ -295,7 +317,7 @@ export function Shell({ children }: { children: ReactNode }) {
             </Link>
           ))}
         </div>
-      ) : null}
+      </aside>
       {open ? (
         <div className="absolute inset-x-0 top-14 z-40 max-h-[70dvh] overflow-auto border-b border-line bg-raise px-3 py-3 md:hidden">
           <div className="mb-2 flex items-center justify-between px-1">

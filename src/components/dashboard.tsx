@@ -3,7 +3,6 @@ import { Bot, Briefcase, ImageIcon, MessageSquare, Wrench, Zap } from "lucide-re
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { HomeUpload } from "@/components/community-feed";
-import { Logo } from "@/components/shell";
 import { getDesk } from "@/lib/connect.functions";
 import { useConnect } from "@/lib/connect";
 import { errorText, formatClock, secondsUntilManilaMidnight } from "@/lib/manila";
@@ -131,9 +130,23 @@ export function Dashboard() {
   ];
   return (
     <div className="mx-auto max-w-3xl px-4 py-4 md:px-8">
-      <p className="text-sm text-teal">Welcome back!</p>
-      <Logo />
-      <p className="mt-1 text-sm text-muted">Good to see you, {firstName}.</p>
+      <article className="overflow-hidden rounded-3xl bg-black">
+        <video
+          src="/reels/welcome.mp4"
+          controls
+          playsInline
+          autoPlay
+          muted
+          loop
+          className="mx-auto max-h-[78dvh] w-full bg-black object-contain"
+        />
+        <div className="bg-raise px-4 py-3">
+          <p className="text-[11px] font-medium tracking-wide text-teal">WELCOME</p>
+          <h2 className="mt-1 font-display text-2xl">Welcome to AI Master Plan</h2>
+          <p className="text-xs text-muted">A short note from Emil before the lessons.</p>
+        </div>
+      </article>
+      {session ? <HomeUpload session={session} name={desk.profile.name || firstName} /> : null}
       <form
         className="mt-4"
         onSubmit={(event) => {
@@ -145,20 +158,6 @@ export function Dashboard() {
       >
         <input name="q" placeholder="Search lessons, tools, or topics..." className="h-12 w-full rounded-2xl border border-line bg-raise px-4" />
       </form>
-      {session ? <HomeUpload session={session} name={desk.profile.name || firstName} /> : null}
-
-      <Link to="/learn/$tutorialId" params={{ tutorialId: today.id }} className="mt-5 block overflow-hidden rounded-3xl border border-line bg-raise">
-        <div className="relative aspect-[16/9]">
-          <img src={today.thumbnail} alt="" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-          <p className="absolute left-3 top-3 text-[11px] font-medium tracking-wide text-teal">FEATURED WALKTHROUGH</p>
-          <span className="absolute right-3 top-3 grid size-10 place-items-center rounded-full bg-teal text-ink">▶</span>
-          <div className="absolute bottom-3 left-3 right-3">
-            <h2 className="font-display text-2xl text-white">{today.title}</h2>
-            <p className="text-xs text-white/80">{today.durationMin}:00</p>
-          </div>
-        </div>
-      </Link>
 
       <section className="mt-5 rounded-3xl border border-line bg-raise p-4">
         <div className="flex items-center justify-between">
